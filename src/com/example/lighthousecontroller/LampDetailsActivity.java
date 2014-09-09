@@ -1,32 +1,37 @@
 package com.example.lighthousecontroller;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
 
 public class LampDetailsActivity extends ActionBarActivity {
-
+	public static final String CLASS_NAME = LampDetailsActivity.class.getName();
+	public static final String LAMP_ARGUMENT = CLASS_NAME + ".LAMP_ARG";
+	private static final String LAMPDETAILSFRAG_TAG = CLASS_NAME + ".LAMPDETAILSFRAG_TAG";
+	private LampDetailsFragment lampDetailsFragment;
+	private Lamp lamp;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_lamp_details);
 
-		if (savedInstanceState == null) {
+		lampDetailsFragment = (LampDetailsFragment) getSupportFragmentManager().findFragmentByTag(LAMPDETAILSFRAG_TAG);
+		if (lampDetailsFragment == null) {
+			lampDetailsFragment = new LampDetailsFragment();
 			getSupportFragmentManager().beginTransaction()
-					.add(R.id.container, new PlaceholderFragment()).commit();
+					.add(R.id.container, lampDetailsFragment, LAMPDETAILSFRAG_TAG).commit();
 		}
+		
+		if(getIntent() != null && getIntent().getExtras() != null){
+			lamp = (Lamp) getIntent().getExtras().getSerializable(LAMP_ARGUMENT);
+		}
+		lampDetailsFragment.setLamp(lamp);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.lamp_details, menu);
 		return true;
@@ -42,23 +47,6 @@ public class LampDetailsActivity extends ActionBarActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-
-		public PlaceholderFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_lamp_details,
-					container, false);
-			return rootView;
-		}
 	}
 
 }

@@ -23,8 +23,9 @@
         android:orientation="horizontal" >
 
         <ImageView
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:id="@+id/lampDetails_iconView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:scaleType="fitXY"
             android:adjustViewBounds="true"
             android:src="@drawable/ic_lamp_on" />
@@ -48,6 +49,7 @@
                     android:layout_marginRight="20dp" />
 
                 <ToggleButton
+                    android:id="@+id/lampDetails_powerControl"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </TableRow>
@@ -63,6 +65,7 @@
 
                 <SeekBar
                     android:layout_span="2"
+                    android:id="@+id/lampDetails_brightControl"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </TableRow>
@@ -77,7 +80,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <com.androidplot.xy.XYPlot
-        android:id="@+id/XYPlot"
+        android:id="@+id/lampDetails_consumptionGraph"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         title="@string/lampconsumption_graph_label" />
