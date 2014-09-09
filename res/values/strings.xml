@@ -2,7 +2,13 @@
 <resources>
 
     <string name="app_name">LightHouseController</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    
+    <string name="loremipsum">Lorem Ipsum</string>
+    
+    <string name="power_label">Power</string>
+    <string name="bright_label">Brilho</string>
+    <string name="lampconsumption_label">Consumo</string>
+    <string name="lampconsumption_graph_label">Consumo</string>
 
 </resources>

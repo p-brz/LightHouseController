@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:text="Minha Lâmpada"
+        android:text="@string/loremipsum"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <LinearLayout
@@ -23,10 +23,9 @@
         android:orientation="horizontal" >
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="500dp"
-            android:minHeight="256dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:scaleType="fitXY"
             android:adjustViewBounds="true"
             android:src="@drawable/ic_lamp_on" />
 
@@ -44,7 +43,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Power"
+                    android:text="@string/power_label"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:layout_marginRight="20dp" />
 
@@ -59,7 +58,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Brilho"
+                    android:text="@string/bright_label"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <SeekBar
@@ -74,13 +73,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Consumo"
+        android:text="@string/lampconsumption_label"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <com.androidplot.xy.XYPlot
         android:id="@+id/XYPlot"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        title="Acceleration Plot" />
+        title="@string/lampconsumption_graph_label" />
 
 </LinearLayout>
