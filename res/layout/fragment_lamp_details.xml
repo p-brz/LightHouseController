@@ -10,7 +10,7 @@
     tools:context="com.example.lighthousecontroller.LampDetailsActivity$PlaceholderFragment" >
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/lampDetails_lampName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
@@ -67,7 +67,8 @@
                     android:layout_span="2"
                     android:id="@+id/lampDetails_brightControl"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content" 
+                    android:max="100"/>
             </TableRow>
         </TableLayout>
     </LinearLayout>
@@ -79,10 +80,9 @@
         android:text="@string/lampconsumption_label"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <com.androidplot.xy.XYPlot
-        android:id="@+id/lampDetails_consumptionGraph"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        title="@string/lampconsumption_graph_label" />
+        android:id="@+id/lampDetails_graphContainer" />
 
 </LinearLayout>

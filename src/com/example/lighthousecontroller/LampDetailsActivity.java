@@ -1,5 +1,7 @@
 package com.example.lighthousecontroller;
 
+import java.util.List;
+
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -11,7 +13,7 @@ public class LampDetailsActivity extends ActionBarActivity {
 	private static final String LAMPDETAILSFRAG_TAG = CLASS_NAME + ".LAMPDETAILSFRAG_TAG";
 	private LampDetailsFragment lampDetailsFragment;
 	private Lamp lamp;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -27,9 +29,14 @@ public class LampDetailsActivity extends ActionBarActivity {
 		if(getIntent() != null && getIntent().getExtras() != null){
 			lamp = (Lamp) getIntent().getExtras().getSerializable(LAMP_ARGUMENT);
 		}
+		else{//FIXME: temporário (apenas para testes)
+			List<Lamp> lamps = LampController.getInstance().getLamps();
+			lamp = lamps.get((int)(System.currentTimeMillis() % lamps.size()));
+		}
+		
 		lampDetailsFragment.setLamp(lamp);
 	}
-
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

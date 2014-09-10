@@ -19,6 +19,17 @@ public class ConsumptionEvent {
 	 * TODO: Ver unidade (talvez Watts ou Killowats)
 	 * */
 	private double consumption;
+	
+	/**
+	 * Identificador para a fonte de consumo.
+	 * */
+	private long sourceId;
+
+	public ConsumptionEvent(long id, long timestamp, double consumptionValue) {
+		this.sourceId = id;
+		this.timestamp = timestamp;
+		this.consumption = consumptionValue;
+	}
 
 	public long getTimestamp() {
 		return timestamp;
@@ -27,14 +38,8 @@ public class ConsumptionEvent {
 	public double getConsumption() {
 		return consumption;
 	}
-
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
+	public long getSourceId(){
+		return sourceId;
 	}
-
-	public void setConsumption(double consumption) {
-		this.consumption = consumption;
-	}
-	
 	
 }
