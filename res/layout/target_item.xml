@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="48dp"
     android:layout_marginTop="2dp"
-    android:background="#F3F3F3">
+    android:background="#F3F3F3"
+    android:clickable="false">
  
      <!-- icon -->
      <ImageView
@@ -32,6 +33,7 @@
  
         <!-- counter -->
 
+    <!--
     <ToggleButton
         android:id="@+id/lampIsOnButton"
         android:layout_width="wrap_content"
@@ -40,5 +42,6 @@
         android:layout_alignParentTop="true"
         android:layout_marginRight="1dp"
         android:text="@string/loremipsum" />
+    -->
  
 </RelativeLayout>

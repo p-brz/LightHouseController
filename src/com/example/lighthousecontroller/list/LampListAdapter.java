@@ -41,16 +41,16 @@ public class LampListAdapter extends ArrayAdapter<Model> {
             TextView titleView = (TextView) rowView.findViewById(R.id.item_title);
 
             boolean isLampOn = modelsArrayList.get(position).getLamp().isOn();
-            ToggleButton button = (ToggleButton) rowView.findViewById(R.id.lampIsOnButton);
-            button.setChecked(isLampOn);
+            //ToggleButton button = (ToggleButton) rowView.findViewById(R.id.lampIsOnButton);
+            //button.setChecked(isLampOn);
             
             // 4. Set the text for textView
             imgView.setImageResource(modelsArrayList.get(position).getIcon());
-            titleView.setText(modelsArrayList.get(position).getTitle());
+            titleView.setText(modelsArrayList.get(position).getLamp().getName());
         }else{
             rowView = inflater.inflate(R.layout.lv_header_layout, parent, false);
             TextView titleView = (TextView) rowView.findViewById(R.id.lv_list_hdr);
-            titleView.setText(modelsArrayList.get(position).getTitle());
+            titleView.setText(modelsArrayList.get(position).getLamp().getName());
 
         }
 
