@@ -1,11 +1,17 @@
 package com.example.lighthousecontroller;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Representa uma determinada medida de consumo em um instante de tempo.
  * */
-public class ConsumptionEvent {
+public class ConsumptionEvent implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2189098899984733235L;
+
 	/**
 	 * O momento em que ocorreu esta medição.
 	 * Dado como 'unix time', mas em milisegundos.

@@ -65,4 +65,7 @@ public class Lamp implements Serializable{
 	public void setBright(float bright) {
 		this.bright = bright;
 	}
+	public void addConsumptionEvent(ConsumptionEvent event) {
+		this.consumptionHistory.add(event);
+	}
 }

@@ -1,7 +1,14 @@
 package com.example.lighthousecontroller;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.nfc.NfcAdapter.CreateBeamUrisCallback;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,13 +42,18 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 		@Override
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 			if(fromUser && lamp != null){
+//				LampController.getInstance()
+//				  .requestChangeBright(lamp, progress /((float)seekBar.getMax())
+//						  				   , LampDetailsFragment.this);
 				LampController.getInstance()
-							  .requestChangeBright(lamp, progress /((float)seekBar.getMax())
-									  				   , LampDetailsFragment.this);
+				  .requestChangeBright(lamp, progress /((float)seekBar.getMax()));
 			}
 		}
 	}
 	private static final float MIN_ICON_ALPHA = 0.3f;
+
+	private static final int CHANGEBRIGHT_NOTIFICATION = 0;
+	private static final int CHANGEPOWER_NOTIFICATION = 1;
 
 	private Lamp lamp;
 	
@@ -78,11 +90,13 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 //			LampController.getInstance().registerObserver(this);
 //		}
 		LampController.getInstance().registerObserver(this);
+		LampController.getInstance().registerLampObserver(this);
 	}
 	@Override
 	public void onPause() {
 		super.onPause();
 		LampController.getInstance().unregisterObserver(this);
+		LampController.getInstance().unregisterLampObserver(this);
 	}
 
 	private void setupViews(View rootView) {
@@ -102,7 +116,8 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				Log.d(getTag(), "checked change");
 				if(lamp != null && lamp.isValid()){
-					LampController.getInstance().requestChangePower(lamp, isChecked, LampDetailsFragment.this);
+//					LampController.getInstance().requestChangePower(lamp, isChecked, LampDetailsFragment.this);
+					LampController.getInstance().requestChangePower(lamp, isChecked);
 //					buttonView.setChecked(lamp.isOn());
 				}
 			}
@@ -148,10 +163,10 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 	@Override
 	public void onConsumption(ConsumptionEvent event) {
 		// TODO Auto-generated method stub
-		Log.d(getTag(), "On Consumption = "
-							+ "lamp: "    + String.valueOf(event.getSourceId())
-							+ "; at: "    + String.valueOf(event.getTimestamp())
-							+ "; value: " + String.valueOf(event.getConsumption()) );	
+//		Log.d(getTag(), "On Consumption = "
+//							+ "lamp: "    + String.valueOf(event.getSourceId())
+//							+ "; at: "    + String.valueOf(event.getTimestamp())
+//							+ "; value: " + String.valueOf(event.getConsumption()) );	
 		if(lamp !=null && event.getSourceId() == this.lamp.getId()){
 			consumptionGraphFragment.plotConsumption(event);
 		}
@@ -161,6 +176,8 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 	
 	@Override
 	public void changedPowerStatus(Lamp lamp) {
+		createChangePowerNotification(lamp, lamp.isOn());
+		
 		if(this.lamp != null && lamp.getId() == this.lamp.getId()){
 			this.lamp.setOn(lamp.isOn());
 			layoutLampStatus();
@@ -169,10 +186,55 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 
 	@Override
 	public void changedBright(Lamp lamp) {
+		this.createChangeBrightNotification(lamp, lamp.getBright());
+		
 		if(this.lamp != null && lamp.getId() == this.lamp.getId()){
 			this.lamp.setBright(lamp.getBright());
 			this.lamp.setOn(lamp.isOn());
 			layoutLampStatus();
 		}
+	}
+	
+	
+
+
+	private void createChangeBrightNotification(Lamp someLamp, float newBright) {
+		Intent intent = new Intent(getActivity(), LampDetailsActivity.class);
+		intent.putExtra(LampDetailsActivity.LAMP_ARGUMENT, someLamp);
+		PendingIntent pIntent = PendingIntent.getActivity(getActivity(), 0, intent, 0);
+
+		// build notification
+		// the addAction re-use the same intent to keep the example short
+		Notification n  = new NotificationCompat.Builder(getActivity())
+		        .setContentTitle("Lâmpada " + someLamp.getName() + " mudou o brilho.")
+		        .setContentText("Novo brilho: " + String.valueOf(newBright*100) + "%")
+		        .setSmallIcon(R.drawable.ic_logo)
+		        .setContentIntent(pIntent)
+		        .setAutoCancel(true).build();
+		    
+		  
+		NotificationManager notificationManager = 
+		  (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+
+		notificationManager.notify(CHANGEBRIGHT_NOTIFICATION, n);
+	}
+	private void createChangePowerNotification(Lamp someLamp, boolean changedTo) {
+		Intent intent = new Intent(getActivity(), LampDetailsActivity.class);
+		intent.putExtra(LampDetailsActivity.LAMP_ARGUMENT, someLamp);
+		PendingIntent pIntent = PendingIntent.getActivity(getActivity(), 0, intent, 0);
+
+		// build notification
+		// the addAction re-use the same intent to keep the example short
+		Notification n  = new NotificationCompat.Builder(getActivity())
+		        .setContentTitle("Lâmpada " + someLamp.getName() + " foi " + (changedTo ? "ligada." : "desligada."))
+		        .setSmallIcon(R.drawable.ic_logo)
+		        .setContentIntent(pIntent)
+		        .setAutoCancel(true).build();
+		    
+		  
+		NotificationManager notificationManager = 
+		  (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+
+		notificationManager.notify(CHANGEPOWER_NOTIFICATION, n);
 	}
 }

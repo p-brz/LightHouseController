@@ -81,13 +81,21 @@ public class ConsumptionGraphFragment extends Fragment{
 		long sourceId = event.getSourceId();
 		if(!consumptionEventsBySource.containsKey(sourceId)){
 			consumptionEventsBySource.put(sourceId, new ArrayList<ConsumptionEvent>());
-			addSerie(sourceId);
 		}
 		this.consumptionEventsBySource.get(sourceId).add(event);
-		graphSeries.get(sourceId).addLast(event.getTimestamp(), event.getConsumption());
+		if(viewsReady){
+			if(!graphSeries.containsKey(sourceId)){
+				addSerie(sourceId);
+			}
+			graphSeries.get(sourceId).addLast(event.getTimestamp(), event.getConsumption());
+		}
 	}
 
 	private void addSerie(long sourceId) {
+		if(!viewsReady){
+			return;
+		}
+		
 		SimpleXYSeries xySeries = new SimpleXYSeries(String.valueOf(sourceId));
 		graphSeries.put(sourceId, xySeries);
 		
