@@ -1,7 +1,5 @@
 package com.example.lighthousecontroller;
 
-import java.util.List;
-
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -28,10 +26,6 @@ public class LampDetailsActivity extends ActionBarActivity {
 		
 		if(getIntent() != null && getIntent().getExtras() != null){
 			lamp = (Lamp) getIntent().getExtras().getSerializable(LAMP_ARGUMENT);
-		}
-		else{//FIXME: temporário (apenas para testes)
-			List<Lamp> lamps = LampController.getInstance().getLamps();
-			lamp = lamps.get((int)(System.currentTimeMillis() % lamps.size()));
 		}
 		
 		lampDetailsFragment.setLamp(lamp);

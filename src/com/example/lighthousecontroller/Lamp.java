@@ -16,7 +16,14 @@ public class Lamp implements Serializable{
 	private float bright;
 	
 	public Lamp() {
+		this(0,"",false);
+	}
+	public Lamp(long lampId, String lampName, boolean isLampOn) {
 		super();
+		this.id = lampId;
+		this.name = lampName;
+		this.on = isLampOn;
+		bright = (on ? 1f : 0f);
 		consumptionHistory = new ArrayList<ConsumptionEvent>();
 	}
 	public long getId() {

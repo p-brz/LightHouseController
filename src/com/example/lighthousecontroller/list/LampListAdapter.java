@@ -1,59 +1,73 @@
 package com.example.lighthousecontroller.list;
 
 import java.util.ArrayList;
-
-import com.example.lighthousecontroller.R;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.ToggleButton;
+
+import com.example.lighthousecontroller.ApplianceGroup;
+import com.example.lighthousecontroller.Lamp;
+import com.example.lighthousecontroller.R;
 
 public class LampListAdapter extends ArrayAdapter<Model> {
 	 
     private final Context context;
-    private final ArrayList<Model> modelsArrayList;
+    private final List<ApplianceGroup> appliancesGroups;
 
-    public LampListAdapter(Context context, ArrayList<Model> modelsArrayList) {
-
-        super(context, R.layout.target_item, modelsArrayList);
+    public LampListAdapter(Context context, List<ApplianceGroup> groups) {
+        super(context, R.layout.target_item);
 
         this.context = context;
-        this.modelsArrayList = modelsArrayList;
+        this.appliancesGroups = new ArrayList<>();
+        if(groups != null && !groups.isEmpty()){
+        	this.appliancesGroups.addAll(groups);
+        	this.doLayout();
+        }
     }
 
-    @Override
+    public List<ApplianceGroup> getAppliancesGroups() {
+		return new CopyOnWriteArrayList<>(this.appliancesGroups);
+	}
+    public void setAppliancesGroups(List<ApplianceGroup> groups) {
+		appliancesGroups.clear();
+    	if(groups != null){
+    		appliancesGroups.addAll(groups);
+    	}
+    	doLayout();
+	}
+    
+    
+	@Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
         LayoutInflater inflater = (LayoutInflater) context
             .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View rowView = null;
-        if(!modelsArrayList.get(position).isGroupHeader()){
-            rowView = inflater.inflate(R.layout.target_item, parent, false);
-
-            // 3. Get icon,title & counter views from the rowView
-            ImageView imgView = (ImageView) rowView.findViewById(R.id.item_icon);
-            TextView titleView = (TextView) rowView.findViewById(R.id.item_title);
-
-            boolean isLampOn = modelsArrayList.get(position).getLamp().isOn();
-            //ToggleButton button = (ToggleButton) rowView.findViewById(R.id.lampIsOnButton);
-            //button.setChecked(isLampOn);
-            
-            // 4. Set the text for textView
-            imgView.setImageResource(modelsArrayList.get(position).getIcon());
-            titleView.setText(modelsArrayList.get(position).getLamp().getName());
-        }else{
-            rowView = inflater.inflate(R.layout.lv_header_layout, parent, false);
-            TextView titleView = (TextView) rowView.findViewById(R.id.lv_list_hdr);
-            titleView.setText(modelsArrayList.get(position).getLamp().getName());
-
-        }
-
-        return rowView;
+        final Model model = super.getItem(position);
+        return model.createView(inflater, convertView, parent);
     }
+    
+
+	private void doLayout() {
+		super.clear();
+		for(ApplianceGroup group : this.appliancesGroups){
+			//Adiciona título
+			super.add(new TitleModel(group.getName()));
+			//Adiciona lâmpadas
+			for(Lamp lamp : group.getAppliances()){
+				super.add(new LampModel(getLampIcon(lamp), lamp));
+			}
+		}
+		notifyDataSetChanged();
+	}
+
+	private int getLampIcon(Lamp lamp) {
+		// TODO Auto-generated method stub
+		return R.drawable.ic_logo;
+	}
 }

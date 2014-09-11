@@ -1,12 +1,12 @@
 package com.example.lighthousecontroller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import android.util.Log;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class LampController {
 	public interface LampObserver {
@@ -31,27 +31,37 @@ public class LampController {
 	private final List<ConsumptionObserver> consumptionObservers;
 	private LampControllerConsumptionSimulator consumptionSimulator;
 	private final List<Lamp> lamps;
+	private final List<ApplianceGroup> groups;
 	
 	public LampController() {
 		super();
 		consumptionObservers = new ArrayList<>();
 		consumptionSimulator = new LampControllerConsumptionSimulator();
 		lamps = new ArrayList<>();
-		populateLamps();
+		groups = new ArrayList<>();
+		generateData();
 	}
-	private void populateLamps() {
+	
+    private void generateData(){ 
 		Random random = new Random();
-		for(int i=0; i < 10; ++i){
-			Lamp lamp = new Lamp();
-			lamp.setId(i + 1);
-			lamp.setOn(random.nextBoolean());
-			if(lamp.isOn()){
-				lamp.setBright(1f);
-			}
-			lamp.setName("Lamp" + String.valueOf(i));
-			lamps.add(lamp);
-		}
-	}
+        int lampCount = 1;
+        List<Lamp> lampadasDaSala = Arrays.asList(new Lamp[] {
+    			new Lamp(lampCount++, "Lâmpada da Sala", random.nextBoolean())
+      		  , new Lamp(lampCount++, "Lâmpada da Copa", random.nextBoolean())});
+        List<Lamp> lampadasDaCozinha = Arrays.asList(new Lamp[] {
+          			new Lamp(lampCount++, "Principal", random.nextBoolean())
+          		  , new Lamp(lampCount++, "Lâmpada da Varanda", random.nextBoolean())});
+        List<Lamp> lampadasDoQuarto = Arrays.asList(new Lamp[] {
+    			new Lamp(lampCount++, "Minha Lâmpada", random.nextBoolean())});
+
+        this.lamps.addAll(lampadasDaSala);
+        this.lamps.addAll(lampadasDaCozinha);
+        this.lamps.addAll(lampadasDoQuarto);
+        
+        groups.add(new ApplianceGroup("Sala", lampadasDaSala));
+        groups.add(new ApplianceGroup("Cozinha", lampadasDaCozinha));
+        groups.add(new ApplianceGroup("Quarto", lampadasDoQuarto));
+    }
 	/* ***************************************** Listeners ********************************************/
 	public void registerObserver(ConsumptionObserver observer) {
 		this.consumptionObservers.add(observer);
@@ -86,6 +96,9 @@ public class LampController {
 		lamp.setBright(bright);
 		lamp.setOn(bright > 0);
 		lampObserver.changedBright(lamp);
+	}
+	public List<ApplianceGroup> getGroups() {
+		return new CopyOnWriteArrayList<>(this.groups);
 	}
 	
 	

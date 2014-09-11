@@ -2,8 +2,6 @@ package com.example.lighthousecontroller;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +16,6 @@ import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.PointLabelFormatter;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
-import com.androidplot.xy.XYSeries;
 
 public class ConsumptionGraphFragment extends Fragment{
 	private XYPlot consumptionGraph;
@@ -108,44 +105,11 @@ public class ConsumptionGraphFragment extends Fragment{
 	
 
 
-	private void setupGraph() {
-//		Number[] series1Numbers = {50, 10, 0, 20, 30,30};
-//        Number[] timestamps     = {
-//        						getTimestamp(9,9,2014,10,15,20), 
-//    							getTimestamp(9,9,2014,10,20,35),
-//    							getTimestamp(9,9,2014,10,40,0),
-//    							getTimestamp(9,9,2014,11,6,0),
-//    							getTimestamp(9,9,2014,11,35,20),
-//    							getTimestamp(9,9,2014,11,70,40)};
-////        Number[] series2Numbers = {4, 6, 3, 8, 2, 10};
-// 
-//        // Turn the above arrays into XYSeries':
-//        XYSeries series1 = new SimpleXYSeries(
-//        		Arrays.asList(timestamps),          // SimpleXYSeries takes a List so turn our array into a List
-//        		Arrays.asList(series1Numbers), // Y_VALS_ONLY means use the element index as the x value
-//                "Series1");                             // Set the display title of the series
-// 
-//        // Create a formatter to use for drawing a series using LineAndPointRenderer
-//        // and configure it from xml:
-//        LineAndPointFormatter series1Format = new LineAndPointFormatter();
-//        series1Format.setPointLabelFormatter(new PointLabelFormatter());
-//        series1Format.configure(getActivity().getApplicationContext(), R.xml.consumption_graph_line_formatter);
-// 
-//        // add a new series' to the xyplot:
-//        consumptionGraph.addSeries(series1, series1Format);
-        
+	private void setupGraph() {        
         consumptionGraph.setRangeValueFormat(new DecimalFormat());
         consumptionGraph.setDomainValueFormat(new TimestampPlotFormat());
         
         // reduce the number of range labels
         consumptionGraph.setTicksPerRangeLabel(3);
-	}
-
-
-	private Number getTimestamp(int day, int month, int year, int hourOfDay, int minute, int second) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.clear();
-		calendar.set(year, month, day, hourOfDay, minute, second);
-		return calendar.getTimeInMillis();
 	}
 }
