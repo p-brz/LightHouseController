@@ -858,10 +858,16 @@ containing a value of this type.
         public static final int abc_split_action_bar_is_narrow=0x7f070002;
     }
     public static final class color {
-        public static final int abc_search_url_text_holo=0x7f080003;
+        public static final int abc_search_url_text_holo=0x7f080009;
         public static final int abc_search_url_text_normal=0x7f080000;
         public static final int abc_search_url_text_pressed=0x7f080002;
         public static final int abc_search_url_text_selected=0x7f080001;
+        public static final int goblinGreen=0x7f080006;
+        public static final int lvDividerColor=0x7f080008;
+        public static final int lvHeaderDividerColor=0x7f080007;
+        public static final int lvHeaderTextColor=0x7f080003;
+        public static final int primaryTextColor=0x7f080004;
+        public static final int secondaryTextColor=0x7f080005;
     }
     public static final class dimen {
         /**  Default height of an action bar. 
@@ -988,6 +994,23 @@ containing a value of this type.
          (the screen is in portrait). This may be either a fraction or a dimension.
          */
         public static final int dialog_fixed_width_minor=0x7f090012;
+        public static final int lvDividerHeight=0x7f090023;
+        public static final int lvDividerMargin=0x7f090024;
+        public static final int lvDividerWidth=0x7f090026;
+        public static final int lvHdrItemHeight=0x7f090019;
+        public static final int lvHeadingPaddingLeft=0x7f09001b;
+        public static final int lvHeadingTextSize=0x7f09001c;
+        public static final int lvItemHeight=0x7f09001a;
+        public static final int lvPrimaryPaddingBottom=0x7f09001e;
+        public static final int lvPrimaryPaddingLeft=0x7f09001f;
+        public static final int lvPrimaryPaddingTop=0x7f09001d;
+        public static final int lvPrimaryTextSize=0x7f090017;
+        public static final int lvSecondaryPaddingBottom=0x7f090021;
+        public static final int lvSecondaryPaddingLeft=0x7f090022;
+        public static final int lvSecondaryPaddingTop=0x7f090020;
+        public static final int lvSecondaryTextSize=0x7f090018;
+        public static final int lvSectionDividerMargin=0x7f090025;
+        public static final int lvSectionDividerMarginTop=0x7f090027;
     }
     public static final class drawable {
         public static final int abc_ab_bottom_solid_dark_holo=0x7f020000;
@@ -1083,6 +1106,7 @@ containing a value of this type.
         public static final int ic_logo=0x7f02005a;
         public static final int logo=0x7f02005b;
         public static final int logo_splash=0x7f02005c;
+        public static final int rectangle=0x7f02005d;
     }
     public static final class id {
         public static final int action_bar=0x7f06001c;
@@ -1096,7 +1120,7 @@ containing a value of this type.
         public static final int action_menu_divider=0x7f060016;
         public static final int action_menu_presenter=0x7f060017;
         public static final int action_mode_close_button=0x7f060024;
-        public static final int action_settings=0x7f060049;
+        public static final int action_settings=0x7f06004e;
         public static final int activity_chooser_view_content=0x7f060025;
         public static final int always=0x7f06000b;
         public static final int beginning=0x7f060011;
@@ -1119,15 +1143,20 @@ containing a value of this type.
         public static final int ifRoom=0x7f06000a;
         public static final int image=0x7f060027;
         public static final int imgLogo=0x7f06003d;
+        public static final int item_icon=0x7f06004b;
+        public static final int item_separator=0x7f060049;
+        public static final int item_title=0x7f06004c;
         public static final int lampDetails_brightControl=0x7f060047;
         public static final int lampDetails_graphContainer=0x7f060048;
         public static final int lampDetails_iconView=0x7f060045;
         public static final int lampDetails_lampName=0x7f060044;
         public static final int lampDetails_powerControl=0x7f060046;
+        public static final int lampIsOnButton=0x7f06004d;
         public static final int listMode=0x7f060001;
         public static final int list_item=0x7f060029;
         public static final int loginField=0x7f06003f;
         public static final int loginLabel=0x7f06003e;
+        public static final int lv_list_hdr=0x7f06004a;
         public static final int middle=0x7f060012;
         public static final int never=0x7f060009;
         public static final int none=0x7f060010;
@@ -1215,7 +1244,9 @@ containing a value of this type.
         public static final int activity_splash=0x7f03001a;
         public static final int fragment_consumption_graph=0x7f03001b;
         public static final int fragment_lamp_details=0x7f03001c;
-        public static final int support_simple_spinner_dropdown_item=0x7f03001d;
+        public static final int lv_header_layout=0x7f03001d;
+        public static final int support_simple_spinner_dropdown_item=0x7f03001e;
+        public static final int target_item=0x7f03001f;
     }
     public static final class menu {
         public static final int lamp_details=0x7f0d0000;
@@ -1508,6 +1539,14 @@ containing a value of this type.
         public static final int Widget_AppCompat_ProgressBar=0x7f0c000a;
         public static final int Widget_AppCompat_ProgressBar_Horizontal=0x7f0c0009;
         public static final int Widget_AppCompat_Spinner_DropDown_ActionBar=0x7f0c0022;
+        public static final int listViewHeaderItem=0x7f0c008d;
+        public static final int listViewHeaderItemButtonStyle=0x7f0c0094;
+        public static final int listViewItem=0x7f0c008e;
+        public static final int listViewItemButtonStyle=0x7f0c0093;
+        public static final int listViewPrimaryDetail=0x7f0c008f;
+        public static final int listViewSecondaryDetail=0x7f0c0090;
+        public static final int listViewSectionDividerVerticalDivider=0x7f0c0092;
+        public static final int listViewVerticalDivider=0x7f0c0091;
     }
     public static final class xml {
         public static final int consumption_graph_line_formatter=0x7f050000;

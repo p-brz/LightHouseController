@@ -9,17 +9,14 @@
     <string name="lampconsumption_label">Consumo</string>
     <string name="lampconsumption_graph_label">Consumo</string>
     <string name="hello_world">Hello world!</string>
-    
     <string name="login_image_desc">Login</string>
     <string name="login_login_label">Login:</string>
     <string name="login_password_label">Senha:</string>
     <string name="login_submit_button">Enviar</string>
     <string name="login_footer">Nome da Equipe</string>
-    
     <string name="title_activity_splash">Splash</string>
     <string name="splash_label">Insert coins (0)</string>
     <string name="splash_image_desc">Logomark</string>
-    
     <string name="title_activity_login">Nome sistema</string>
 
 </resources>

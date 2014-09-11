@@ -1,6 +1,7 @@
 package com.example.lighthousecontroller;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -23,12 +24,12 @@ public class Login extends Activity {
 		
 		String login = loginView.getText().toString();
 		String password = passwordView.getText().toString();
-		
-		Log.println(1, "Debug Login", login);
-		Log.println(1, "Debug Pass", password);
 
 		if(isValidPassword(login, password)){
-			Toast.makeText(this, "SUCESSO!", Toast.LENGTH_SHORT).show();
+			Intent intent = new Intent(this, LampListActivity.class);
+			startActivity(intent);
+			
+			finish();
 		}else{
 			Toast.makeText(this, "Login incorreto", Toast.LENGTH_SHORT).show();
 		}
