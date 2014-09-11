@@ -1080,6 +1080,9 @@ containing a value of this type.
         public static final int ic_lamp_off=0x7f020057;
         public static final int ic_lamp_on=0x7f020058;
         public static final int ic_launcher=0x7f020059;
+        public static final int ic_logo=0x7f02005a;
+        public static final int logo=0x7f02005b;
+        public static final int logo_splash=0x7f02005c;
     }
     public static final class id {
         public static final int action_bar=0x7f06001c;
@@ -1093,13 +1096,14 @@ containing a value of this type.
         public static final int action_menu_divider=0x7f060016;
         public static final int action_menu_presenter=0x7f060017;
         public static final int action_mode_close_button=0x7f060024;
-        public static final int action_settings=0x7f060043;
+        public static final int action_settings=0x7f060049;
         public static final int activity_chooser_view_content=0x7f060025;
         public static final int always=0x7f06000b;
         public static final int beginning=0x7f060011;
+        public static final int button1=0x7f060042;
         public static final int checkbox=0x7f06002d;
         public static final int collapseActionView=0x7f06000d;
-        public static final int consumptionGraph_graph=0x7f06003d;
+        public static final int consumptionGraph_graph=0x7f060043;
         public static final int container=0x7f06003c;
         public static final int default_activity_button=0x7f060028;
         public static final int dialog=0x7f06000e;
@@ -1114,17 +1118,22 @@ containing a value of this type.
         public static final int icon=0x7f06002a;
         public static final int ifRoom=0x7f06000a;
         public static final int image=0x7f060027;
-        public static final int lampDetails_brightControl=0x7f060041;
-        public static final int lampDetails_graphContainer=0x7f060042;
-        public static final int lampDetails_iconView=0x7f06003f;
-        public static final int lampDetails_lampName=0x7f06003e;
-        public static final int lampDetails_powerControl=0x7f060040;
+        public static final int imgLogo=0x7f06003d;
+        public static final int lampDetails_brightControl=0x7f060047;
+        public static final int lampDetails_graphContainer=0x7f060048;
+        public static final int lampDetails_iconView=0x7f060045;
+        public static final int lampDetails_lampName=0x7f060044;
+        public static final int lampDetails_powerControl=0x7f060046;
         public static final int listMode=0x7f060001;
         public static final int list_item=0x7f060029;
+        public static final int loginField=0x7f06003f;
+        public static final int loginLabel=0x7f06003e;
         public static final int middle=0x7f060012;
         public static final int never=0x7f060009;
         public static final int none=0x7f060010;
         public static final int normal=0x7f060000;
+        public static final int passField=0x7f060041;
+        public static final int passLabel=0x7f060040;
         public static final int progress_circular=0x7f060018;
         public static final int progress_horizontal=0x7f060019;
         public static final int radio=0x7f06002f;
@@ -1202,9 +1211,11 @@ containing a value of this type.
         public static final int abc_search_view=0x7f030016;
         public static final int abc_simple_decor=0x7f030017;
         public static final int activity_lamp_details=0x7f030018;
-        public static final int fragment_consumption_graph=0x7f030019;
-        public static final int fragment_lamp_details=0x7f03001a;
-        public static final int support_simple_spinner_dropdown_item=0x7f03001b;
+        public static final int activity_login=0x7f030019;
+        public static final int activity_splash=0x7f03001a;
+        public static final int fragment_consumption_graph=0x7f03001b;
+        public static final int fragment_lamp_details=0x7f03001c;
+        public static final int support_simple_spinner_dropdown_item=0x7f03001d;
     }
     public static final class menu {
         public static final int lamp_details=0x7f0d0000;
@@ -1253,10 +1264,20 @@ containing a value of this type.
         public static final int action_settings=0x7f0b000e;
         public static final int app_name=0x7f0b000d;
         public static final int bright_label=0x7f0b0011;
+        public static final int hello_world=0x7f0b0014;
         public static final int lampconsumption_graph_label=0x7f0b0013;
         public static final int lampconsumption_label=0x7f0b0012;
+        public static final int login_footer=0x7f0b0019;
+        public static final int login_image_desc=0x7f0b0015;
+        public static final int login_login_label=0x7f0b0016;
+        public static final int login_password_label=0x7f0b0017;
+        public static final int login_submit_button=0x7f0b0018;
         public static final int loremipsum=0x7f0b000f;
         public static final int power_label=0x7f0b0010;
+        public static final int splash_image_desc=0x7f0b001c;
+        public static final int splash_label=0x7f0b001b;
+        public static final int title_activity_login=0x7f0b001d;
+        public static final int title_activity_splash=0x7f0b001a;
     }
     public static final class style {
         /** 
