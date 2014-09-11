@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.Toast;
 
 public class SplashActivity extends Activity {
 
@@ -20,7 +17,6 @@ public class SplashActivity extends Activity {
         new Handler().postDelayed(new Runnable() {
  
         	// Might be useful for automatic server discover (see nmap)
-        	
             @Override
             public void run() {
                 Intent i = new Intent(SplashActivity.this, Login.class);
