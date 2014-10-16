@@ -6,12 +6,15 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.example.lighthousecontroller.LampController.ConsumptionObserver;
-import com.example.lighthousecontroller.LampController.LampObserver;
-
+import android.os.Handler;
 import android.util.Log;
 
 public class LampController {
+	private static final String LOG_TAG = LampController.class.getName();
+	
+	public interface LampCollectionObserver {
+		void onLampCollectionChange(List<ApplianceGroup> lampGroups);
+	}
 	public interface LampObserver {
 		void changedPowerStatus(Lamp lamp);
 		void changedBright(Lamp lamp);
@@ -19,8 +22,6 @@ public class LampController {
 	public interface ConsumptionObserver {
 		public void onConsumption(ConsumptionEvent event);
 	}
-
-	private static final String LOG_TAG = LampController.class.getName();
 	
 	private static LampController singleton;
 	public static LampController getInstance() {
@@ -31,6 +32,7 @@ public class LampController {
 	}
 
 	private final List<ConsumptionObserver> consumptionObservers;
+	private final List<LampCollectionObserver> lampCollectionObservers;
 	private LampControllerConsumptionSimulator consumptionSimulator;
 	private final List<Lamp> lamps;
 	private final List<ApplianceGroup> groups;
@@ -40,33 +42,12 @@ public class LampController {
 	public LampController() {
 		super();
 		consumptionObservers = new ArrayList<>();
+		lampCollectionObservers = new ArrayList<>();
 		lampObservers = new ArrayList<>();
 		consumptionSimulator = new LampControllerConsumptionSimulator();
 		lamps = new ArrayList<>();
 		groups = new ArrayList<>();
-		generateData();
 	}
-	
-    private void generateData(){ 
-		Random random = new Random();
-        int lampCount = 1;
-        List<Lamp> lampadasDaSala = Arrays.asList(new Lamp[] {
-    			new Lamp(lampCount++, "Lâmpada da Sala", random.nextBoolean())
-      		  , new Lamp(lampCount++, "Lâmpada da Copa", random.nextBoolean())});
-        List<Lamp> lampadasDaCozinha = Arrays.asList(new Lamp[] {
-          			new Lamp(lampCount++, "Principal", random.nextBoolean())
-          		  , new Lamp(lampCount++, "Lâmpada da Varanda", random.nextBoolean())});
-        List<Lamp> lampadasDoQuarto = Arrays.asList(new Lamp[] {
-    			new Lamp(lampCount++, "Minha Lâmpada", random.nextBoolean())});
-
-        this.lamps.addAll(lampadasDaSala);
-        this.lamps.addAll(lampadasDaCozinha);
-        this.lamps.addAll(lampadasDoQuarto);
-        
-        groups.add(new ApplianceGroup("Sala", lampadasDaSala));
-        groups.add(new ApplianceGroup("Cozinha", lampadasDaCozinha));
-        groups.add(new ApplianceGroup("Quarto", lampadasDoQuarto));
-    }
 	/* ***************************************** Listeners ********************************************/
 	public void registerObserver(ConsumptionObserver observer) {
 		this.consumptionObservers.add(observer);
@@ -75,6 +56,9 @@ public class LampController {
 	public void unregisterObserver(ConsumptionObserver observer) {
 		this.consumptionObservers.remove(observer);
 		stopSimulator();
+	}
+	public List<ConsumptionObserver> getConsumptionObservers() {
+		return new CopyOnWriteArrayList<>(this.consumptionObservers);
 	}
 
 	public void registerLampObserver(LampObserver observer) {
@@ -88,10 +72,33 @@ public class LampController {
 	public List<LampObserver> getLampObservers() {
 		return new CopyOnWriteArrayList<>(this.lampObservers);
 	}
+
+	public void addLampCollectionObserver(LampCollectionObserver observer) {
+		this.lampCollectionObservers.add(observer);
+	}
+	public void removeLampCollectionObserver(LampCollectionObserver observer) {
+		this.lampCollectionObservers.remove(observer);
+	}
 	
+	/* ***********************************************************************************************/
+	public List<ApplianceGroup> getGroups() {
+		//FIXME: simulando tempo de carregamento/atualização de grupos
+		if(groups.isEmpty()){
+			Handler handler = new Handler();
+			handler.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					generateData();
+					notifyLampCollectionChange();
+				}
+			}, 800);
+		}
+		return new CopyOnWriteArrayList<>(this.groups);
+	}
 	public List<Lamp> getLamps() {
 		return new CopyOnWriteArrayList<>(this.lamps);
 	}
+	
 	public void requestChangePower(Lamp lamp, boolean on) {
 		this.requestChangePower(lamp, on, null);
 	}
@@ -110,14 +117,6 @@ public class LampController {
 		}
 		fireChangePower(lamp);
 	}
-	private Lamp getLamp(long id) {
-		for(Lamp lamp : this.lamps){
-			if(lamp.getId() == id){
-				return lamp;
-			}
-		}
-		return null;
-	}
 
 	public void requestChangeBright(Lamp lamp, float bright) {
 		this.requestChangeBright(lamp, bright, null);
@@ -134,6 +133,15 @@ public class LampController {
 		fireChangeBright(lamp);
 	}
 
+	/* ******************************** Private methods************************************************/
+	private Lamp getLamp(long id) {
+		for(Lamp lamp : this.lamps){
+			if(lamp.getId() == id){
+				return lamp;
+			}
+		}
+		return null;
+	}
 	private void fireChangePower(Lamp lamp) {
 		for(LampObserver observer : this.lampObservers){
 			observer.changedPowerStatus(lamp);
@@ -145,16 +153,34 @@ public class LampController {
 		}
 	}
 
-	
-	public List<ApplianceGroup> getGroups() {
-		return new CopyOnWriteArrayList<>(this.groups);
+
+	private void notifyLampCollectionChange() {
+		for(LampCollectionObserver observer : this.lampCollectionObservers){
+			observer.onLampCollectionChange(getGroups());
+		}
 	}
+    private void generateData(){ 
+		Random random = new Random();
+        int lampCount = 1;
+        List<Lamp> lampadasDaSala = Arrays.asList(new Lamp[] {
+    			new Lamp(lampCount++, "Lâmpada da Sala", random.nextBoolean())
+      		  , new Lamp(lampCount++, "Lâmpada da Copa", random.nextBoolean())});
+        List<Lamp> lampadasDaCozinha = Arrays.asList(new Lamp[] {
+          			new Lamp(lampCount++, "Principal", random.nextBoolean())
+          		  , new Lamp(lampCount++, "Lâmpada da Varanda", random.nextBoolean())});
+        List<Lamp> lampadasDoQuarto = Arrays.asList(new Lamp[] {
+    			new Lamp(lampCount++, "Minha Lâmpada", random.nextBoolean())});
 
-	public List<ConsumptionObserver> getConsumptionObservers() {
-		return new CopyOnWriteArrayList<>(this.consumptionObservers);
-	}
-
-
+        this.lamps.clear();
+        this.lamps.addAll(lampadasDaSala);
+        this.lamps.addAll(lampadasDaCozinha);
+        this.lamps.addAll(lampadasDoQuarto);
+        
+        this.groups.clear();
+        groups.add(new ApplianceGroup("Sala", lampadasDaSala));
+        groups.add(new ApplianceGroup("Cozinha", lampadasDaCozinha));
+        groups.add(new ApplianceGroup("Quarto", lampadasDoQuarto));
+    }
 	private void startSimulator() {
 		if(!consumptionSimulator.isRunning() && 
 				(!consumptionObservers.isEmpty() || !lampObservers.isEmpty())){
@@ -167,5 +193,4 @@ public class LampController {
 			consumptionSimulator.stopConsumptionReceiver();
 		}
 	}
-	
 }

@@ -1,4 +1,7 @@
-package com.example.lighthousecontroller;
+package com.example.lighthousecontroller.view;
+
+import com.example.lighthousecontroller.R;
+import com.example.lighthousecontroller.R.layout;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -16,11 +19,10 @@ public class SplashActivity extends Activity {
  
         new Handler().postDelayed(new Runnable() {
  
-        	// Might be useful for automatic server discover (see nmap)
             @Override
             public void run() {
-                Intent i = new Intent(SplashActivity.this, Login.class);
-                startActivity(i);
+                Intent intentToStartLogin = new Intent(SplashActivity.this, Login.class);
+                startActivity(intentToStartLogin);
                 finish();
             }
         }, SPLASH_TIME_OUT);

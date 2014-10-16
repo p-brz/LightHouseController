@@ -1,4 +1,4 @@
-package com.example.lighthousecontroller;
+package com.example.lighthousecontroller.view;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -16,6 +16,12 @@ import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.PointLabelFormatter;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
+import com.example.lighthousecontroller.ConsumptionEvent;
+import com.example.lighthousecontroller.R;
+import com.example.lighthousecontroller.TimestampPlotFormat;
+import com.example.lighthousecontroller.R.id;
+import com.example.lighthousecontroller.R.layout;
+import com.example.lighthousecontroller.R.xml;
 
 public class ConsumptionGraphFragment extends Fragment{
 	private XYPlot consumptionGraph;

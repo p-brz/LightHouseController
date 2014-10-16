@@ -1,7 +1,14 @@
-package com.example.lighthousecontroller;
+package com.example.lighthousecontroller.view;
+
+import com.example.lighthousecontroller.Lamp;
+import com.example.lighthousecontroller.R;
+import com.example.lighthousecontroller.R.id;
+import com.example.lighthousecontroller.R.layout;
+import com.example.lighthousecontroller.R.menu;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -9,6 +16,7 @@ public class LampDetailsActivity extends ActionBarActivity {
 	public static final String CLASS_NAME = LampDetailsActivity.class.getName();
 	public static final String LAMP_ARGUMENT = CLASS_NAME + ".LAMP_ARG";
 	private static final String LAMPDETAILSFRAG_TAG = CLASS_NAME + ".LAMPDETAILSFRAG_TAG";
+	private static final String LOG_TAG = CLASS_NAME;
 	private LampDetailsFragment lampDetailsFragment;
 	private Lamp lamp;
 
@@ -26,6 +34,7 @@ public class LampDetailsActivity extends ActionBarActivity {
 		
 		if(getIntent() != null && getIntent().getExtras() != null){
 			lamp = (Lamp) getIntent().getExtras().getSerializable(LAMP_ARGUMENT);
+			Log.d(LOG_TAG, lamp.getName());
 		}
 		
 		lampDetailsFragment.setLamp(lamp);

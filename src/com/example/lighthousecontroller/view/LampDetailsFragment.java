@@ -1,11 +1,10 @@
-package com.example.lighthousecontroller;
+package com.example.lighthousecontroller.view;
 
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.nfc.NfcAdapter.CreateBeamUrisCallback;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
@@ -22,8 +21,15 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.example.lighthousecontroller.ConsumptionEvent;
+import com.example.lighthousecontroller.Lamp;
+import com.example.lighthousecontroller.LampController;
+import com.example.lighthousecontroller.R;
 import com.example.lighthousecontroller.LampController.ConsumptionObserver;
 import com.example.lighthousecontroller.LampController.LampObserver;
+import com.example.lighthousecontroller.R.drawable;
+import com.example.lighthousecontroller.R.id;
+import com.example.lighthousecontroller.R.layout;
 
 public class LampDetailsFragment extends Fragment implements ConsumptionObserver, LampObserver{
 	public class BrightControlChanged implements OnSeekBarChangeListener {
@@ -42,9 +48,6 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 		@Override
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 			if(fromUser && lamp != null){
-//				LampController.getInstance()
-//				  .requestChangeBright(lamp, progress /((float)seekBar.getMax())
-//						  				   , LampDetailsFragment.this);
 				LampController.getInstance()
 				  .requestChangeBright(lamp, progress /((float)seekBar.getMax()));
 			}
@@ -54,6 +57,8 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 
 	private static final int CHANGEBRIGHT_NOTIFICATION = 0;
 	private static final int CHANGEPOWER_NOTIFICATION = 1;
+
+	private static final String LOG_TAG = LampDetailsFragment.class.getName();
 
 	private Lamp lamp;
 	
@@ -86,11 +91,10 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 	@Override
 	public void onResume() {
 		super.onResume();
-//		if(lamp != null && lamp.getId() > 0){
-//			LampController.getInstance().registerObserver(this);
-//		}
-		LampController.getInstance().registerObserver(this);
-		LampController.getInstance().registerLampObserver(this);
+		if(lamp != null && lamp.getId() > 0){
+			LampController.getInstance().registerObserver(this);
+			LampController.getInstance().registerLampObserver(this);
+		}
 	}
 	@Override
 	public void onPause() {
@@ -116,9 +120,7 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				Log.d(getTag(), "checked change");
 				if(lamp != null && lamp.isValid()){
-//					LampController.getInstance().requestChangePower(lamp, isChecked, LampDetailsFragment.this);
 					LampController.getInstance().requestChangePower(lamp, isChecked);
-//					buttonView.setChecked(lamp.isOn());
 				}
 			}
 		});
@@ -150,7 +152,6 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 		powerControl.setChecked(lampIsOn);
 		if(!lampIsOn){
 			brightControl.setProgress(0);
-//			ViewCompat.setAlpha(lampIconView, 1f);
 		}
 		else{
 			brightControl.setProgress((int)(lamp.getBright()*brightControl.getMax()));
@@ -199,13 +200,16 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 
 
 	private void createChangeBrightNotification(Lamp someLamp, float newBright) {
-		Intent intent = new Intent(getActivity(), LampDetailsActivity.class);
+		Log.d(LOG_TAG, someLamp.getName());
+		
+		Context context = getActivity().getApplicationContext();
+		Intent intent = new Intent(context, LampDetailsActivity.class);
 		intent.putExtra(LampDetailsActivity.LAMP_ARGUMENT, someLamp);
-		PendingIntent pIntent = PendingIntent.getActivity(getActivity(), 0, intent, 0);
+		PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
 		// build notification
 		// the addAction re-use the same intent to keep the example short
-		Notification n  = new NotificationCompat.Builder(getActivity())
+		Notification n  = new NotificationCompat.Builder(context)
 		        .setContentTitle("Lâmpada " + someLamp.getName() + " mudou o brilho.")
 		        .setContentText("Novo brilho: " + String.valueOf(newBright*100) + "%")
 		        .setSmallIcon(R.drawable.ic_logo)
@@ -219,13 +223,17 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 		notificationManager.notify(CHANGEBRIGHT_NOTIFICATION, n);
 	}
 	private void createChangePowerNotification(Lamp someLamp, boolean changedTo) {
-		Intent intent = new Intent(getActivity(), LampDetailsActivity.class);
+		Log.d(LOG_TAG, someLamp.getName());
+		
+		Context context = getActivity().getApplicationContext();
+		Intent intent = new Intent(context, LampDetailsActivity.class);
 		intent.putExtra(LampDetailsActivity.LAMP_ARGUMENT, someLamp);
-		PendingIntent pIntent = PendingIntent.getActivity(getActivity(), 0, intent, 0);
+		PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
+		
 
 		// build notification
 		// the addAction re-use the same intent to keep the example short
-		Notification n  = new NotificationCompat.Builder(getActivity())
+		Notification n  = new NotificationCompat.Builder(context)
 		        .setContentTitle("Lâmpada " + someLamp.getName() + " foi " + (changedTo ? "ligada." : "desligada."))
 		        .setSmallIcon(R.drawable.ic_logo)
 		        .setContentIntent(pIntent)
