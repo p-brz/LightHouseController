@@ -1,5 +1,7 @@
 package com.example.lighthousecontroller.view;
 
+import java.util.List;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -24,12 +26,9 @@ import android.widget.ToggleButton;
 import com.example.lighthousecontroller.ConsumptionEvent;
 import com.example.lighthousecontroller.Lamp;
 import com.example.lighthousecontroller.LampController;
-import com.example.lighthousecontroller.R;
 import com.example.lighthousecontroller.LampController.ConsumptionObserver;
 import com.example.lighthousecontroller.LampController.LampObserver;
-import com.example.lighthousecontroller.R.drawable;
-import com.example.lighthousecontroller.R.id;
-import com.example.lighthousecontroller.R.layout;
+import com.example.lighthousecontroller.R;
 
 public class LampDetailsFragment extends Fragment implements ConsumptionObserver, LampObserver{
 	public class BrightControlChanged implements OnSeekBarChangeListener {
@@ -55,11 +54,6 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 	}
 	private static final float MIN_ICON_ALPHA = 0.3f;
 
-	private static final int CHANGEBRIGHT_NOTIFICATION = 0;
-	private static final int CHANGEPOWER_NOTIFICATION = 1;
-
-	private static final String LOG_TAG = LampDetailsFragment.class.getName();
-
 	private Lamp lamp;
 	
 	private ImageView lampIconView;
@@ -82,7 +76,7 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 				container, false);
 		
 		setupViews(rootView);
-		populateViews();
+		updateView();
 		
 		return rootView;
 	}
@@ -92,15 +86,25 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 	public void onResume() {
 		super.onResume();
 		if(lamp != null && lamp.getId() > 0){
-			LampController.getInstance().registerObserver(this);
-			LampController.getInstance().registerLampObserver(this);
+			LampController.getInstance().addConsumptionObserver(this, lamp.getId());
+			LampController.getInstance().addLampObserver(this, lamp.getId());
+			lamp = LampController.getInstance().getLampStatus(lamp);
+			updateView();
 		}
 	}
+
 	@Override
 	public void onPause() {
 		super.onPause();
-		LampController.getInstance().unregisterObserver(this);
-		LampController.getInstance().unregisterLampObserver(this);
+		LampController.getInstance().removeConsumptionObserver(this, lamp.getId());
+		LampController.getInstance().removeLampObserver(this, lamp.getId());
+	}
+	public Lamp getLamp() {
+		return lamp;
+	}
+	public void setLamp(Lamp lamp) {
+		this.lamp = lamp;
+		updateView();
 	}
 
 	private void setupViews(View rootView) {
@@ -129,24 +133,47 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 		viewsReady = true;
 	}
 
-	public Lamp getLamp() {
-		return lamp;
-	}
-	public void setLamp(Lamp lamp) {
-		this.lamp = lamp;
-		populateViews();
+	/* *********************************** ConsumptionObserver ************************************************/
+	
+	@Override
+	public void onConsumption(List<ConsumptionEvent> consumptionEvents) {	
+		for(ConsumptionEvent event : consumptionEvents){
+			if(lamp !=null && event.getSourceId() == this.lamp.getId()){
+				consumptionGraphFragment.plotConsumption(event);
+			}
+		}
 	}
 
-	private void populateViews() {
+	/* *********************************** LampObserver ************************************************/
+	
+	@Override
+	public void changedPowerStatus(Lamp lamp) {
+		if(this.lamp != null && lamp.getId() == this.lamp.getId()){
+			this.lamp.setOn(lamp.isOn());
+			updateLampStatus();
+		}
+	}
+
+	@Override
+	public void changedBright(Lamp lamp) {
+		if(this.lamp != null && lamp.getId() == this.lamp.getId()){
+			this.lamp.setBright(lamp.getBright());
+			this.lamp.setOn(lamp.isOn());
+			updateLampStatus();
+		}
+	}
+	
+	/* ************************************* View ***************************************************/
+	public void updateView() {
 		if(viewsReady){
-			layoutLampStatus();
+			updateLampStatus();
 			nameView.setText(lamp != null ? lamp.getName() : "");
 			consumptionGraphFragment.addConsumptionHistory(
 					lamp != null ? lamp.getConsumptionHistory() : null);
 		}
 	}
-
-	private void layoutLampStatus() {
+	
+	private void updateLampStatus() {
 		boolean lampIsOn = (lamp != null && lamp.isOn());
 		lampIconView.setImageResource( lampIsOn? R.drawable.ic_lamp_on : R.drawable.ic_lamp_off);
 		powerControl.setChecked(lampIsOn);
@@ -160,89 +187,4 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 		}
 	}
 
-
-	@Override
-	public void onConsumption(ConsumptionEvent event) {
-		// TODO Auto-generated method stub
-//		Log.d(getTag(), "On Consumption = "
-//							+ "lamp: "    + String.valueOf(event.getSourceId())
-//							+ "; at: "    + String.valueOf(event.getTimestamp())
-//							+ "; value: " + String.valueOf(event.getConsumption()) );	
-		if(lamp !=null && event.getSourceId() == this.lamp.getId()){
-			consumptionGraphFragment.plotConsumption(event);
-		}
-	}
-
-	/* *********************************** LampObserver ************************************************/
-	
-	@Override
-	public void changedPowerStatus(Lamp lamp) {
-		createChangePowerNotification(lamp, lamp.isOn());
-		
-		if(this.lamp != null && lamp.getId() == this.lamp.getId()){
-			this.lamp.setOn(lamp.isOn());
-			layoutLampStatus();
-		}
-	}
-
-	@Override
-	public void changedBright(Lamp lamp) {
-		this.createChangeBrightNotification(lamp, lamp.getBright());
-		
-		if(this.lamp != null && lamp.getId() == this.lamp.getId()){
-			this.lamp.setBright(lamp.getBright());
-			this.lamp.setOn(lamp.isOn());
-			layoutLampStatus();
-		}
-	}
-	
-	
-
-
-	private void createChangeBrightNotification(Lamp someLamp, float newBright) {
-		Log.d(LOG_TAG, someLamp.getName());
-		
-		Context context = getActivity().getApplicationContext();
-		Intent intent = new Intent(context, LampDetailsActivity.class);
-		intent.putExtra(LampDetailsActivity.LAMP_ARGUMENT, someLamp);
-		PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
-
-		// build notification
-		// the addAction re-use the same intent to keep the example short
-		Notification n  = new NotificationCompat.Builder(context)
-		        .setContentTitle("Lâmpada " + someLamp.getName() + " mudou o brilho.")
-		        .setContentText("Novo brilho: " + String.valueOf(newBright*100) + "%")
-		        .setSmallIcon(R.drawable.ic_logo)
-		        .setContentIntent(pIntent)
-		        .setAutoCancel(true).build();
-		    
-		  
-		NotificationManager notificationManager = 
-		  (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-
-		notificationManager.notify(CHANGEBRIGHT_NOTIFICATION, n);
-	}
-	private void createChangePowerNotification(Lamp someLamp, boolean changedTo) {
-		Log.d(LOG_TAG, someLamp.getName());
-		
-		Context context = getActivity().getApplicationContext();
-		Intent intent = new Intent(context, LampDetailsActivity.class);
-		intent.putExtra(LampDetailsActivity.LAMP_ARGUMENT, someLamp);
-		PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
-		
-
-		// build notification
-		// the addAction re-use the same intent to keep the example short
-		Notification n  = new NotificationCompat.Builder(context)
-		        .setContentTitle("Lâmpada " + someLamp.getName() + " foi " + (changedTo ? "ligada." : "desligada."))
-		        .setSmallIcon(R.drawable.ic_logo)
-		        .setContentIntent(pIntent)
-		        .setAutoCancel(true).build();
-		    
-		  
-		NotificationManager notificationManager = 
-		  (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-
-		notificationManager.notify(CHANGEPOWER_NOTIFICATION, n);
-	}
 }

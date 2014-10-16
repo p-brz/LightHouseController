@@ -16,12 +16,10 @@ import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.PointLabelFormatter;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
+import com.androidplot.xy.XYStepMode;
 import com.example.lighthousecontroller.ConsumptionEvent;
 import com.example.lighthousecontroller.R;
 import com.example.lighthousecontroller.TimestampPlotFormat;
-import com.example.lighthousecontroller.R.id;
-import com.example.lighthousecontroller.R.layout;
-import com.example.lighthousecontroller.R.xml;
 
 public class ConsumptionGraphFragment extends Fragment{
 	private XYPlot consumptionGraph;
@@ -30,9 +28,22 @@ public class ConsumptionGraphFragment extends Fragment{
 	
 	private boolean viewsReady;
 	
+	private TimestampPlotFormat domainPlotFormat;
+	private long timeRangeInMilliseconds;
+	private int domainDivisions;
+	/** Indica que cada evento de consumo recebido representa uma mudança no estado do valor de consumo.
+	 * Ou seja, que até o momento anterior, o valor de consumo era o mesmo indicado pelo último evento 
+	 * de consumo.*/
+	private boolean eventIsChange = true;
+	
 	public ConsumptionGraphFragment() {
 		consumptionEventsBySource = new HashMap<>();
 		graphSeries = new HashMap<>();
+		
+		domainPlotFormat = new TimestampPlotFormat();
+		
+		timeRangeInMilliseconds = 60000; 
+		domainDivisions = 10;
 	}
 	
 	@Override
@@ -44,16 +55,27 @@ public class ConsumptionGraphFragment extends Fragment{
 		setupViews(rootView);
 		
 		return rootView;
+	}	
+	
+	public long getTimeRangeInMilliseconds() {
+		return timeRangeInMilliseconds;
 	}
 
-	private void setupViews(View rootView) {
-        consumptionGraph = (XYPlot) rootView.findViewById(R.id.consumptionGraph_graph);
-        setupGraph();
-		viewsReady = true;
+	public void setTimeRangeInMilliseconds(long timeRangeInMilliseconds) {
+		this.timeRangeInMilliseconds = timeRangeInMilliseconds;
+	}
+	public int getDomainDivisions() {
+		return domainDivisions;
+	}
+
+	public void setDomainDivisions(int domainDivisions) {
+		this.domainDivisions = domainDivisions;
 	}
 
 	public void clearGraph(){
-		//TODO: not implemented yet
+		for(SimpleXYSeries serie: graphSeries.values()){
+			this.consumptionGraph.removeSeries(serie);
+		}
 	}
 	public void addConsumptionHistory(List<ConsumptionEvent> list) {
 		if(list != null){
@@ -67,6 +89,14 @@ public class ConsumptionGraphFragment extends Fragment{
 	public void plotConsumption(ConsumptionEvent event) {
 		addConsumptionEvent(event);
 		redraw();
+	}
+	
+	
+
+	private void setupViews(View rootView) {
+        consumptionGraph = (XYPlot) rootView.findViewById(R.id.consumptionGraph_graph);
+        setupGraph();
+		viewsReady = true;
 	}
 
 	private void addEvents(List<ConsumptionEvent> list) {
@@ -93,8 +123,57 @@ public class ConsumptionGraphFragment extends Fragment{
 			if(!graphSeries.containsKey(sourceId)){
 				addSerie(sourceId);
 			}
-			graphSeries.get(sourceId).addLast(event.getTimestamp(), event.getConsumption());
+			
+			SimpleXYSeries serie = graphSeries.get(sourceId);
+			if(eventIsChange && serie.size() > 0){
+				double lastConsumption = serie.getY(serie.size()-1).doubleValue();
+				serie.addLast(event.getTimestamp()-1, lastConsumption);
+			}
+			serie.addLast(event.getTimestamp(), event.getConsumption());
+//			if(graphSeries.get(sourceId).size() > this.maxRangeSize){
+//				graphSeries.get(sourceId).removeFirst();
+//			}
+			removeGraphsByTimeRange(event.getTimestamp());
 		}
+	}
+
+	private void removeGraphsByTimeRange(long lastTimestamp) {
+		boolean moreGraphsOutRange = true;
+		do
+		{
+			moreGraphsOutRange = false;
+			for(SimpleXYSeries serie: graphSeries.values()){
+				if(serie.size() > 0){
+					//moreGraphsOutRange só será falso se todos retornarem falso
+					moreGraphsOutRange = moreGraphsOutRange || removeLastSeriePointIfOutdated(lastTimestamp, serie);
+				}
+			}
+		}while(moreGraphsOutRange );
+	}
+
+	private boolean removeLastSeriePointIfOutdated(long lastTimestamp, SimpleXYSeries serie) {
+		Number timestamp = serie.getX(0);
+		if(lastTimestamp - timestamp.longValue() > timeRangeInMilliseconds){
+			Number nextTimestamp = serie.getX(0);
+			serie.removeFirst();
+			if(lastTimestamp - nextTimestamp.longValue() < timeRangeInMilliseconds){
+				//Próximo passo é maior que ponto anterior, cria ponto médio:
+				addMediumSeriePoint(lastTimestamp, serie);
+				return false;
+			}
+			else{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void addMediumSeriePoint(long lastTimestamp, SimpleXYSeries serie) {
+		Number nextTimestamp = serie.getX(0);
+		long boundaryTimestep = lastTimestamp - timeRangeInMilliseconds;
+		double boundaryValue = serie.getY(0).doubleValue() * (boundaryTimestep/nextTimestamp.doubleValue());
+		
+		serie.addFirst(boundaryTimestep, boundaryValue);
 	}
 
 	private void addSerie(long sourceId) {
@@ -121,7 +200,9 @@ public class ConsumptionGraphFragment extends Fragment{
 
 	private void setupGraph() {        
         consumptionGraph.setRangeValueFormat(new DecimalFormat());
-        consumptionGraph.setDomainValueFormat(new TimestampPlotFormat());
+        consumptionGraph.setDomainValueFormat(this.domainPlotFormat);
+        
+        consumptionGraph.setDomainStep(XYStepMode.SUBDIVIDE, domainDivisions);
         
         // reduce the number of range labels
         consumptionGraph.setTicksPerRangeLabel(3);

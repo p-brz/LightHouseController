@@ -1,16 +1,14 @@
 package com.example.lighthousecontroller.view;
 
-import com.example.lighthousecontroller.Lamp;
-import com.example.lighthousecontroller.R;
-import com.example.lighthousecontroller.R.id;
-import com.example.lighthousecontroller.R.layout;
-import com.example.lighthousecontroller.R.menu;
-
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.example.lighthousecontroller.Lamp;
+import com.example.lighthousecontroller.LampController;
+import com.example.lighthousecontroller.R;
 
 public class LampDetailsActivity extends ActionBarActivity {
 	public static final String CLASS_NAME = LampDetailsActivity.class.getName();
@@ -38,6 +36,9 @@ public class LampDetailsActivity extends ActionBarActivity {
 		}
 		
 		lampDetailsFragment.setLamp(lamp);
+		
+		//FIXME: temporário
+		LampController.getInstance().context = getApplicationContext();
 	}
 	
 	@Override

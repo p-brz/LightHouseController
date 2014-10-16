@@ -7,11 +7,9 @@ import java.util.Random;
 import android.os.Handler;
 import android.util.Log;
 
-import com.example.lighthousecontroller.LampController.ConsumptionObserver;
-
 public class LampControllerConsumptionSimulator {
-	private static final int MIN_CONSUMPTION_TIME = 1000;
-	private static final int MAX_CONSUMPTION_TIME = 5000;
+	private static final int MIN_CONSUMPTION_TIME = 100;
+	private static final int MAX_CONSUMPTION_TIME = 2000;
 	private static final String LOG_TAG = LampControllerConsumptionSimulator.class.getName();
 	private static final float CHANGE_CHANCE = 0.1f;
 	private static final double LAMP_POWER = 60;
@@ -76,7 +74,7 @@ public class LampControllerConsumptionSimulator {
 		}
 		ConsumptionEvent event =  calculateConsumption(someLamp);
 		someLamp.addConsumptionEvent(event);
-		fireConsumptionEvent(event);
+		controller.fireConsumptionEvent(event);
 	}
 	private ConsumptionEvent calculateConsumption(Lamp someLamp) {
 		double consumption = 0;
@@ -117,16 +115,6 @@ public class LampControllerConsumptionSimulator {
 		return randomBetween(MIN_CONSUMPTION_TIME, MAX_CONSUMPTION_TIME);
 	}
 	
-	protected void fireConsumptionEvent(ConsumptionEvent event) {
-		List<ConsumptionObserver> consumptionObservers = controller.getConsumptionObservers();
-		
-		if(consumptionObservers == null || consumptionObservers.isEmpty()){
-			return;
-		}
-		for(ConsumptionObserver observer : consumptionObservers){
-			observer.onConsumption(event);
-		}
-	}
 	private long randomBetween(int minValue, int maxValue) {
 		return random.nextInt(maxValue - minValue) + minValue;
 	}
