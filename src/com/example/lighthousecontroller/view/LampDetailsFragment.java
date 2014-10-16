@@ -2,14 +2,8 @@ package com.example.lighthousecontroller.view;
 
 import java.util.List;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -80,7 +74,6 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 		
 		return rootView;
 	}
-
 	
 	@Override
 	public void onResume() {
@@ -148,21 +141,35 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 	
 	@Override
 	public void changedPowerStatus(Lamp lamp) {
-		if(this.lamp != null && lamp.getId() == this.lamp.getId()){
-			this.lamp.setOn(lamp.isOn());
-			updateLampStatus();
-		}
+		assertValidLamp(lamp);
+		this.lamp.setOn(lamp.isOn());
+		updateLampStatus();
 	}
 
 	@Override
 	public void changedBright(Lamp lamp) {
-		if(this.lamp != null && lamp.getId() == this.lamp.getId()){
-			this.lamp.setBright(lamp.getBright());
-			this.lamp.setOn(lamp.isOn());
-			updateLampStatus();
-		}
+		assertValidLamp(lamp);
+		this.lamp.setBright(lamp.getBright());
+		this.lamp.setOn(lamp.isOn());
+		updateLampStatus();
+	}
+	@Override
+	public void lampUpdated(Lamp lamp) {
+		assertValidLamp(lamp);
+		this.lamp.set(lamp);
 	}
 	
+	private void assertValidLamp(Lamp lamp) {
+		String message = "Invalid lamp value! ";
+		if(this.lamp == null){
+			throw new RuntimeException(message + "Lamp is null!" );
+		}
+		else if(this.lamp != null && lamp.getId() != this.lamp.getId()){
+			throw new RuntimeException(message + "Lamp is not the expected! This id is " + this.lamp.getId()
+					+ " and received is: " + lamp.getId());
+		}
+	}
+
 	/* ************************************* View ***************************************************/
 	public void updateView() {
 		if(viewsReady){

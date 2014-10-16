@@ -31,6 +31,7 @@ public class LampController {
 	public interface LampObserver {
 		void changedPowerStatus(Lamp lamp);
 		void changedBright(Lamp lamp);
+		void lampUpdated(Lamp lamp);
 	}
 	public interface ConsumptionObserver {
 		public void onConsumption(List<ConsumptionEvent> event);
