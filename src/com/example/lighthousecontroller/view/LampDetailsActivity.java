@@ -33,13 +33,21 @@ public class LampDetailsActivity extends ActionBarActivity {
 		if(getIntent() != null && getIntent().getExtras() != null){
 			lamp = (Lamp) getIntent().getExtras().getSerializable(LAMP_ARGUMENT);
 
+			assertNotNull(lamp);
+			
 			Log.d(getClass().getName(), "Start details activity with lamp of id "+lamp.getId()+": " + lamp);
 			Log.d(LOG_TAG, lamp.getName());
+			
+			lampDetailsFragment.setLamp(lamp);
 		}
-		
-		lampDetailsFragment.setLamp(lamp);
 	}
 	
+	private void assertNotNull(Object obj) {
+		if(obj == null){
+			throw new NullPointerException();
+		}
+	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

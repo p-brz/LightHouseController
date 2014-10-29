@@ -5,6 +5,7 @@ import java.util.List;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
@@ -28,6 +29,9 @@ public class LampListActivity extends ListActivity implements LampCollectionObse
 	protected void onResume() {
 		super.onResume();
 		LampController.getInstance().addLampCollectionObserver(this);
+		
+		Log.d(getClass().getName(), "onResume. GetGroups");
+		
 		updateLampsList(LampController.getInstance().getGroups());
 	}
 	@Override

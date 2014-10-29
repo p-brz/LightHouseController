@@ -51,6 +51,9 @@
 	            android:value="com.example.lighthousecontroller.view.LampListActivity" />
             
         </activity>
+        
+        <service android:name="com.example.lighthousecontroller.controller.LampService"
+            	android:exported="false"/>
     </application>
 
 </manifest>

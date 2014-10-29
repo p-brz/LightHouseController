@@ -66,6 +66,8 @@ public class LampControllerConsumptionSimulator {
 	private void simulate() {
 		Lamp someLamp = choiceRandomLamp();
 		
+		Log.d(getClass().getName(), "Simulando consumo para lâmpada: " + someLamp + " com id: " + someLamp.getId());
+		
 		if(lampShouldChange()){ //Mudar status de energia
 			//Inverte estado da lâmpada
 			boolean changedTo = !someLamp.isOn();

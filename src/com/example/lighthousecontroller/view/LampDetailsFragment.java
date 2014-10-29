@@ -60,6 +60,7 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 	private boolean viewsReady;
 	
 	public LampDetailsFragment() {
+		Log.d(getClass().getName(), "Criando fragmento! " + this.toString());
 		consumptionGraphFragment = new ConsumptionGraphFragment();
 	}
 	
@@ -95,8 +96,10 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 	public Lamp getLamp() {
 		return lamp;
 	}
-	public void setLamp(Lamp lamp) {
+	public void setLamp(Lamp lamp) {		
 		this.lamp = lamp;
+		
+		assertValidLocalLamp();
 		updateView();
 	}
 
@@ -111,11 +114,10 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 									.commit();
 		
 		brightControl.setOnSeekBarChangeListener(new BrightControlChanged());
-		
+
 		powerControl.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				Log.d(getTag(), "checked change");
 				if(lamp != null && lamp.isValid()){
 					LampController.getInstance().requestChangePower(lamp, isChecked);
 				}
@@ -141,8 +143,9 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 	
 	@Override
 	public void changedPowerStatus(Lamp lamp) {
-		assertValidLamp(lamp);
-		this.lamp.setOn(lamp.isOn());
+//		assertValidLocalLamp();
+//		assertValidLamp(lamp);
+//		this.lamp.setOn(lamp.isOn());
 		updateLampStatus();
 	}
 
@@ -155,16 +158,23 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 	}
 	@Override
 	public void lampUpdated(Lamp lamp) {
+		assertValidLocalLamp();
 		assertValidLamp(lamp);
 		this.lamp.set(lamp);
 	}
-	
+
+	private void assertValidLocalLamp() {
+		if(this.lamp == null){
+			throw new RuntimeException("Local lamp is null!" );
+		}
+		
+		if(lamp.getId() <= 0){
+			throw new RuntimeException("Local lamp has an invalid id: " + lamp.getId());
+		}
+	}
 	private void assertValidLamp(Lamp lamp) {
 		String message = "Invalid lamp value! ";
-		if(this.lamp == null){
-			throw new RuntimeException(message + "Lamp is null!" );
-		}
-		else if(this.lamp != null && lamp.getId() != this.lamp.getId()){
+		if(this.lamp != null && lamp.getId() != this.lamp.getId()){
 			throw new RuntimeException(message + "Lamp is not the expected! This id is " + this.lamp.getId()
 					+ " and received is: " + lamp.getId());
 		}
