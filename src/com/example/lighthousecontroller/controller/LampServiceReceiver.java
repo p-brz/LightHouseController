@@ -73,35 +73,23 @@ public class LampServiceReceiver extends BroadcastReceiver {
 			}
 		}
 		private void receiveChangePower(Context context, Intent intent) {
-			Toast.makeText(context, "Updated power in lamp: " 
-					+ intent.getSerializableExtra(LampService.LAMP_DATA)
-						, Toast.LENGTH_LONG).show();
-			Lamp receivedLamp = (Lamp)intent.getSerializableExtra(LampService.LAMP_DATA);
-			
-			Log.d(getClass().getName(), "receiveChangePower. Received Lamp: " + receivedLamp);
-			
-			assertNotNull(receivedLamp);
-
-			Data.instance().getLampDAO().updateLamp(receivedLamp);
-			fireChangePower(receivedLamp);
+			onLampUpdate(intent);
 		}
 
 		private void receiveChangeBright(Context context, Intent intent) {
-			Toast.makeText(context, "Updated bright in lamp: " 
-					+ intent.getSerializableExtra(LampService.LAMP_DATA)
-						, Toast.LENGTH_LONG).show();
-			Lamp receivedLamp = (Lamp)intent.getSerializableExtra(LampService.LAMP_DATA);
-			Data.instance().getLampDAO().updateLamp(receivedLamp);
-			fireChangeBright(receivedLamp);
+			onLampUpdate(intent);
 		}
 
 		private void receiveLamp(Context context, Intent intent) {
-			Toast.makeText(context, "Received lamp: " 
-									+ intent.getSerializableExtra(LampService.LAMP_DATA)
-										, Toast.LENGTH_LONG).show();
-			Lamp receivedLamp = (Lamp)intent.getSerializableExtra(LampService.LAMP_DATA);
-			Data.instance().getLampDAO().updateLamp(receivedLamp);
-			//TODO: notificar atualização da lâmpada
+			onLampUpdate(intent);
+		}
+
+		private void onLampUpdate(Intent intent) {
+			Lamp receivedLamp = (Lamp)intent.getSerializableExtra(LampService.LAMP_DATA);			
+			assertNotNull(receivedLamp);
+
+			Data.instance().getLampDAO().updateLamp(receivedLamp); //FIXME: mover isto para serviço
+			fireLampUpdate(receivedLamp);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -123,7 +111,6 @@ public class LampServiceReceiver extends BroadcastReceiver {
 			broadcastManager.registerReceiver(this, receiveLampFilter);
 			broadcastManager.registerReceiver(this, receiveChangeBrightFilter);
 			broadcastManager.registerReceiver(this, receiveChangePowerFilter);
-			
 		}
 
 		public void addLampObserver(LampObserver observer, Long lampId) {
@@ -153,7 +140,7 @@ public class LampServiceReceiver extends BroadcastReceiver {
 			}
 		}
 		
-		private void fireChangePower(Lamp lamp) {
+		private void fireLampUpdate(Lamp lamp) {
 			assertNotNull(lamp);
 			
 			List<LampObserver> observers = new ArrayList<LampObserver>();
@@ -164,31 +151,14 @@ public class LampServiceReceiver extends BroadcastReceiver {
 				observers.addAll(this.lampObservers.get(null));
 			}
 			for(LampObserver observer : observers){
-				observer.changedPowerStatus(lamp);
+				observer.lampUpdated(lamp);
 			}
-			createChangePowerNotification(lamp, lamp.isOn());
-		}
-		
-		private void fireChangeBright(Lamp lamp) {
-			assert lamp != null;
-			if(lampObservers.containsKey(lamp.getId())){
-				for(LampObserver observer : this.lampObservers.get(lamp.getId())){
-					Log.d(getClass().getName(),"Bright changed! Notify LampObserver : " + observer);
-					observer.changedBright(lamp);
-				}
-			}
-			if(lampObservers.containsKey(null)){
-				for(LampObserver observer : this.lampObservers.get(null)){
-					Log.d(getClass().getName(),"Bright changed! Notify LampObserver : " + observer);
-					observer.changedBright(lamp);
-				}
-			}
-			
-			createChangeBrightNotification(lamp, lamp.getBright());
+//			createChangePowerNotification(lamp, lamp.isOn());
 		}
 		
 		/* ********************************Notificações*********************************************/
-
+		
+		//FIXME: mover notificações para serviço (?)
 		private void createChangeBrightNotification(Lamp someLamp, float newBright) {
 			if(context == null){
 				throw new IllegalStateException("Context should not be null!");
@@ -214,6 +184,7 @@ public class LampServiceReceiver extends BroadcastReceiver {
 
 			notificationManager.notify(CHANGEBRIGHT_NOTIFICATION, n);
 		}
+		//FIXME: mover notificações para serviço (?)
 		private void createChangePowerNotification(Lamp lamp, boolean changedTo) {
 			if(context == null){
 				throw new IllegalStateException("Context should not be null!");

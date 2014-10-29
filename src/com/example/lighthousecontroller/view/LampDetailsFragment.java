@@ -141,26 +141,27 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 
 	/* *********************************** LampObserver ************************************************/
 	
-	@Override
-	public void changedPowerStatus(Lamp lamp) {
-//		assertValidLocalLamp();
+//	@Override
+//	public void changedPowerStatus(Lamp lamp) {
+////		assertValidLocalLamp();
+////		assertValidLamp(lamp);
+////		this.lamp.setOn(lamp.isOn());
+//		updateLampStatus();
+//	}
+//
+//	@Override
+//	public void changedBright(Lamp lamp) {
 //		assertValidLamp(lamp);
+//		this.lamp.setBright(lamp.getBright());
 //		this.lamp.setOn(lamp.isOn());
-		updateLampStatus();
-	}
-
-	@Override
-	public void changedBright(Lamp lamp) {
-		assertValidLamp(lamp);
-		this.lamp.setBright(lamp.getBright());
-		this.lamp.setOn(lamp.isOn());
-		updateLampStatus();
-	}
+//		updateLampStatus();
+//	}
 	@Override
 	public void lampUpdated(Lamp lamp) {
 		assertValidLocalLamp();
 		assertValidLamp(lamp);
 		this.lamp.set(lamp);
+		updateLampStatus();
 	}
 
 	private void assertValidLocalLamp() {
