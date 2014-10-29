@@ -1,4 +1,4 @@
-package com.example.lighthousecontroller;
+package com.example.lighthousecontroller.model;
 
 import java.util.ArrayList;
 import java.util.List;

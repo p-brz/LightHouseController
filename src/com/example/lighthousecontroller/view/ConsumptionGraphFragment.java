@@ -17,9 +17,8 @@ import com.androidplot.xy.PointLabelFormatter;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYStepMode;
-import com.example.lighthousecontroller.ConsumptionEvent;
 import com.example.lighthousecontroller.R;
-import com.example.lighthousecontroller.TimestampPlotFormat;
+import com.example.lighthousecontroller.model.ConsumptionEvent;
 
 public class ConsumptionGraphFragment extends Fragment{
 	private XYPlot consumptionGraph;

@@ -8,12 +8,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
-import com.example.lighthousecontroller.ApplianceGroup;
-import com.example.lighthousecontroller.LampController;
-import com.example.lighthousecontroller.LampController.LampCollectionObserver;
+import com.example.lighthousecontroller.controller.LampCollectionObserver;
+import com.example.lighthousecontroller.controller.LampController;
 import com.example.lighthousecontroller.list.LampListAdapter;
 import com.example.lighthousecontroller.list.LampModel;
 import com.example.lighthousecontroller.list.Model;
+import com.example.lighthousecontroller.model.ApplianceGroup;
 
 public class LampListActivity extends ListActivity implements LampCollectionObserver {
 	private LampListAdapter adapter;

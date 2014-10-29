@@ -1,4 +1,4 @@
-package com.example.lighthousecontroller;
+package com.example.lighthousecontroller.view;
 
 import android.annotation.SuppressLint;
 import java.text.DateFormat;

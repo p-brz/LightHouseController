@@ -17,12 +17,12 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.example.lighthousecontroller.ConsumptionEvent;
-import com.example.lighthousecontroller.Lamp;
-import com.example.lighthousecontroller.LampController;
-import com.example.lighthousecontroller.LampController.ConsumptionObserver;
-import com.example.lighthousecontroller.LampController.LampObserver;
 import com.example.lighthousecontroller.R;
+import com.example.lighthousecontroller.controller.ConsumptionObserver;
+import com.example.lighthousecontroller.controller.LampController;
+import com.example.lighthousecontroller.controller.LampObserver;
+import com.example.lighthousecontroller.model.ConsumptionEvent;
+import com.example.lighthousecontroller.model.Lamp;
 
 public class LampDetailsFragment extends Fragment implements ConsumptionObserver, LampObserver{
 	public class BrightControlChanged implements OnSeekBarChangeListener {

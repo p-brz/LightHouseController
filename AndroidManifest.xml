@@ -9,10 +9,23 @@
         android:targetSdkVersion="20" />
 
     <application
+        android:name=".LightHouseControllerApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        
+        <activity
+       		android:name="com.example.lighthousecontroller.view.LampListActivity"
+            android:label="@string/title_activity_login"
+            android:theme="@style/Theme.AppCompat.Light" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
         <activity
             android:name="com.example.lighthousecontroller.view.SplashActivity"
             android:label="@string/title_activity_splash"
@@ -23,19 +36,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.lighthousecontroller.view.LampDetailsActivity"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.AppCompat.Light">
-        </activity>
         <activity
             android:name="com.example.lighthousecontroller.view.Login"
             android:label="@string/title_activity_login"
             android:theme="@style/Theme.AppCompat.Light" >
         </activity>
-        <activity
-       		android:name="com.example.lighthousecontroller.view.LampListActivity"
-            android:label="@string/title_activity_login"
-            android:theme="@style/Theme.AppCompat.Light" >
+        <activity android:name="com.example.lighthousecontroller.view.LampDetailsActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.AppCompat.Light"
+            android:parentActivityName="com.example.lighthousecontroller.view.LampListActivity">
+            
+	        <meta-data
+	            android:name="android.support.PARENT_ACTIVITY"
+	            android:value="com.example.lighthousecontroller.view.LampListActivity" />
+            
         </activity>
     </application>
 

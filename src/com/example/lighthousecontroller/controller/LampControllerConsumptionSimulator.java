@@ -1,8 +1,11 @@
-package com.example.lighthousecontroller;
+package com.example.lighthousecontroller.controller;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+
+import com.example.lighthousecontroller.model.ConsumptionEvent;
+import com.example.lighthousecontroller.model.Lamp;
 
 import android.os.Handler;
 import android.util.Log;

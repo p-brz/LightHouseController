@@ -6,9 +6,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.lighthousecontroller.Lamp;
-import com.example.lighthousecontroller.LampController;
 import com.example.lighthousecontroller.R;
+import com.example.lighthousecontroller.controller.LampController;
+import com.example.lighthousecontroller.model.Lamp;
 
 public class LampDetailsActivity extends ActionBarActivity {
 	public static final String CLASS_NAME = LampDetailsActivity.class.getName();
@@ -32,13 +32,12 @@ public class LampDetailsActivity extends ActionBarActivity {
 		
 		if(getIntent() != null && getIntent().getExtras() != null){
 			lamp = (Lamp) getIntent().getExtras().getSerializable(LAMP_ARGUMENT);
+
+			Log.d(getClass().getName(), "Start details activity with lamp of id "+lamp.getId()+": " + lamp);
 			Log.d(LOG_TAG, lamp.getName());
 		}
 		
 		lampDetailsFragment.setLamp(lamp);
-		
-		//FIXME: temporário
-		LampController.getInstance().context = getApplicationContext();
 	}
 	
 	@Override

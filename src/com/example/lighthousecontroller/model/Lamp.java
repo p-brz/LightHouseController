@@ -1,4 +1,4 @@
-package com.example.lighthousecontroller;
+package com.example.lighthousecontroller.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,6 +25,10 @@ public class Lamp implements Serializable{
 		this.on = isLampOn;
 		bright = (on ? 1f : 0f);
 		consumptionHistory = new ArrayList<ConsumptionEvent>();
+	}
+	public Lamp(Lamp otherLamp) {
+		this();
+		this.set(otherLamp);
 	}
 	public long getId() {
 		return id;
@@ -69,6 +73,7 @@ public class Lamp implements Serializable{
 		this.consumptionHistory.add(event);
 	}
 	public void set(Lamp lamp) {
+		this.id = lamp.getId();
 		this.bright = lamp.getBright();
 		this.on     = lamp.isOn();
 		this.name   = lamp.getName();

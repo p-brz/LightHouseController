@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.lighthousecontroller.Lamp;
 import com.example.lighthousecontroller.R;
+import com.example.lighthousecontroller.model.Lamp;
 
 public class LampModel implements Model{
 	
