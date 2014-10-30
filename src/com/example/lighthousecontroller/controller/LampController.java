@@ -164,6 +164,8 @@ public class LampController {
 	}
 
 	void fireConsumptionEvent(ConsumptionEvent event) {
+		Data.instance().getLampDAO().addConsumption(event);
+		
 		List<ConsumptionEvent> events = Collections.singletonList(event);
 		if(consumptionObservers.containsKey(event.getSourceId())){
 			for(ConsumptionObserver observer : consumptionObservers.get(event.getSourceId())){

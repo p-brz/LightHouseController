@@ -4,20 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Column {
-	public enum Constraint {
-		PRIMARY_KEY("PRIMARY KEY");
-		
-		private String name;
-		private Constraint(String name){
-			this.name = name;
-		}
-		
-		public String toString(){
-			return name;
-		}
-	}
 	public enum ColumnType{
-		NONE, INTEGER, FLOAT, TEXT, BOOLEAN
+		NONE, INTEGER, FLOAT, TEXT, BOOLEAN, DATETIME
 	};
 	private String name;
 	private ColumnType type;

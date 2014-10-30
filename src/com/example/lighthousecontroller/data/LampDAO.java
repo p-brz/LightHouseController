@@ -17,6 +17,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.example.lighthousecontroller.model.ApplianceGroup;
+import com.example.lighthousecontroller.model.ConsumptionEvent;
 import com.example.lighthousecontroller.model.Lamp;
 
 public class LampDAO {
@@ -25,6 +26,7 @@ public class LampDAO {
 
 	private LampTable lampTable;
 	private ApplianceGroupTable applianceGroupTable;
+	private LampConsumptionTable consumptionTable;
 			
 	private SQLiteOpenHelper sqliteDb;
 	
@@ -39,13 +41,14 @@ public class LampDAO {
 		
 		lampTable = new LampTable();
 		applianceGroupTable = new ApplianceGroupTable();
+		consumptionTable = new LampConsumptionTable();
 		
 		sqliteDb = openHelper;
 	}
 
 
 	public Collection<? extends Table> getTables() {
-		return Arrays.asList(lampTable, applianceGroupTable);
+		return Arrays.asList(lampTable, applianceGroupTable, consumptionTable);
 	}
 	public List<Lamp> getLamps() {	
 		SQLiteDatabase database = sqliteDb.getReadableDatabase();
@@ -106,6 +109,8 @@ public class LampDAO {
 		for(c.moveToFirst(); !(c.isAfterLast()); c.moveToNext()){
 			Lamp lamp = lampTable.readLamp(c);
 			
+			readLampConsumption(database, lamp);
+			
 			if(lampsGroups != null){
 				Integer groupId = c.getInt(c.getColumnIndexOrThrow(LampTable.GROUP_ID_COLUMN));
 				if(lampsGroups.get(groupId) == null){
@@ -119,6 +124,19 @@ public class LampDAO {
 		
 		return lamps;
 	}
+
+	private void readLampConsumption(SQLiteDatabase database, Lamp lamp) {
+		String whereClause = LampConsumptionTable.LAMPSOURCE_COLUMN + " = " + lamp.getId();
+		Cursor c = database.query(consumptionTable.getName(), consumptionTable.listColumnsNames(), whereClause, null, null, null, null);
+		
+		List<ConsumptionEvent> consumptionHistory = new ArrayList<>();
+		for(c.moveToFirst(); !(c.isAfterLast()); c.moveToNext()){
+			ConsumptionEvent event = consumptionTable.read(c);
+			consumptionHistory.add(event);
+		}
+		lamp.setConsumptionHistory(consumptionHistory);
+	}
+
 
 //	public void insertOrUpdateGroups(List<ApplianceGroup> groups) {
 //		this.groups.addAll(groups);
@@ -275,6 +293,19 @@ public class LampDAO {
 		
 		long rowsAffected = database.update(lampTable.getName(), lampValues, whereClause, null);
 		Log.d(getClass().getName(), "UpdateLamp. RowsAffected: " + rowsAffected);
+		
+		database.close();
+	}
+
+
+	public void addConsumption(ConsumptionEvent event) {
+		SQLiteDatabase database = sqliteDb.getReadableDatabase(); //TODO: não deveria abrir banco de dados na main thread
+		
+		ContentValues values = consumptionTable.toValues(event);
+		
+		long inserted = database.insert(consumptionTable.getName(), null, values);
+		
+		Log.d(getClass().getName(), "Inserted consumption: " + inserted);
 		
 		database.close();
 	}

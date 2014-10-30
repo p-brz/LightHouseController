@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.example.lighthousecontroller.data.Column.ColumnType;
-import com.example.lighthousecontroller.data.Column.Constraint;
 import com.example.lighthousecontroller.model.ApplianceGroup;
 
 public class ApplianceGroupTable extends BaseTable {
