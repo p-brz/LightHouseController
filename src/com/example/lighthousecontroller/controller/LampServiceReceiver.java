@@ -98,7 +98,16 @@ public class LampServiceReceiver extends BroadcastReceiver {
 					, Toast.LENGTH_LONG).show();
 			
 			List<ApplianceGroup> lampGroups = (List<ApplianceGroup>)intent.getSerializableExtra(LampService.GROUPS_DATA);
-			Data.instance().getLampDAO().insertOrUpdateGroups(lampGroups);
+			Data.instance().getLampDAO().setGroupsAndLamps(lampGroups);
+//			List<Lamp> lamps = new ArrayList<>();
+//			for(ApplianceGroup group : lampGroups){
+//				lamps.addAll(group.getAppliances());
+//			}
+//			
+//
+//			Log.d(getClass().getName(),"Received lamps in groups: " + lamps);
+//			
+//			Data.instance().getLampDAO().setLamps(lamps);
 			
 			
 			notifyLampCollectionChange(lampGroups);

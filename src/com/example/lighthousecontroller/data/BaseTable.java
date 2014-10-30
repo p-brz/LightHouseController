@@ -47,6 +47,7 @@ public class BaseTable implements Table{
 		return cmdBuilder.toString();
 	}
 
+	@Override
 	public String getName() {
 		return this.tableName;
 	}
@@ -66,6 +67,14 @@ public class BaseTable implements Table{
 	@Override
 	public void dropTable(SQLiteDatabase db) {
 		db.execSQL("DROP TABLE IF EXISTS " + tableName + ";");
+	}
+
+	public String[] listColumnsNames() {
+		String names[] = new String[this.columns.size()];
+		for(int i=0; i < columns.size(); ++i){
+			names[i] = columns.get(i).getName();
+		}
+		return names;
 	}
 
 }

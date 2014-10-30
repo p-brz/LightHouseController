@@ -17,7 +17,7 @@ public class Column {
 		}
 	}
 	public enum ColumnType{
-		NONE, INTEGER, FLOAT, TEXT
+		NONE, INTEGER, FLOAT, TEXT, BOOLEAN
 	};
 	private String name;
 	private ColumnType type;

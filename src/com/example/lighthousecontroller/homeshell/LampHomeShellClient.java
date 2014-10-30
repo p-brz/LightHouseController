@@ -76,9 +76,10 @@ public class LampHomeShellClient {
 
 //            groups = new ArrayList<>();
         	groups.clear();
-            groups.add(new ApplianceGroup("Sala", lampadasDaSala));
-            groups.add(new ApplianceGroup("Cozinha", lampadasDaCozinha));
-            groups.add(new ApplianceGroup("Quarto", lampadasDoQuarto));
+//        	groups.add(new ApplianceGroup(1, "Lâmpadas", lamps));
+            groups.add(new ApplianceGroup(1,"Sala", lampadasDaSala));
+            groups.add(new ApplianceGroup(2, "Cozinha", lampadasDaCozinha));
+            groups.add(new ApplianceGroup(3, "Quarto", lampadasDoQuarto));
         }
         
         
@@ -102,7 +103,7 @@ public class LampHomeShellClient {
 //	}
 	public Lamp changeLampBright(long lampId, float bright) {
 		Lamp lamp = getLamp(lampId);
-		lamp.setBright(bright);;
+		lamp.setBright(bright);
 		return new Lamp(lamp);
 	}
 	public void updateLampStatus(Lamp storedLamp) {

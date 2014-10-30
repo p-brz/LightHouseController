@@ -82,7 +82,13 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 		if(lamp != null && lamp.getId() > 0){
 			LampController.getInstance().addConsumptionObserver(this, lamp.getId());
 			LampController.getInstance().addLampObserver(this, lamp.getId());
-			lamp = LampController.getInstance().getLampStatus(lamp);
+			Lamp readedLamp = LampController.getInstance().getLampStatus(lamp);
+			if(readedLamp != null){
+				this.lamp.set(readedLamp);
+			}
+			else{
+				//TODO: notificar erro (?)
+			}
 			updateView();
 		}
 	}

@@ -22,7 +22,7 @@ public class Data {
 	public Data() {
 		Context context=LightHouseControllerApplication.getApplication();
 		database = new LightHouseControllerDatabase(context);
-		lampDAO = new LampDAO(context);
+		lampDAO = new LampDAO(context, database);
 		setupDatabase();
 	}
 	

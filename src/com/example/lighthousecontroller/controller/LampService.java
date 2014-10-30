@@ -3,10 +3,9 @@ package com.example.lighthousecontroller.controller;
 import java.io.Serializable;
 import java.util.List;
 
-import android.app.IntentService;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
-import android.widget.Toast;
+import android.util.Log;
 
 import com.example.lighthousecontroller.homeshell.LampHomeShellClient;
 import com.example.lighthousecontroller.model.ApplianceGroup;
@@ -51,6 +50,12 @@ public class LampService extends LongLivedIntentService{
 
 	private void getGroups(Intent intent) {		
 		List<ApplianceGroup> groups = LampHomeShellClient.instance().getGroups();
+
+		Log.d(getClass().getName(),"Get groups from HomeShellClient: " + groups);
+		for(ApplianceGroup group : groups){
+			Log.d(getClass().getName(),"Lamps in group " + group.getName() +": " + group.getAppliances());
+		}
+		
 		Intent responseIntent = new Intent();
 		responseIntent.setAction(RECEIVE_GROUPS);
 		responseIntent.putExtra(GROUPS_DATA, (Serializable)groups);
@@ -73,11 +78,16 @@ public class LampService extends LongLivedIntentService{
 		long lampId = intent.getLongExtra(LAMP_ID_DATA, 0);
 		if(lampId > 0 && intent.hasExtra(POWER_DATA)){
 			boolean on = intent.getBooleanExtra(POWER_DATA, false);
-			Lamp lamp = LampHomeShellClient.instance().changeLampPower(lampId, on);
-			Intent responseIntent = new Intent();
-			responseIntent.setAction(RECEIVE_CHANGEPOWER);
-			responseIntent.putExtra(LAMP_DATA, lamp);
-			LocalBroadcastManager.getInstance(this).sendBroadcast(responseIntent);
+			try{
+				Lamp lamp = LampHomeShellClient.instance().changeLampPower(lampId, on);
+				Intent responseIntent = new Intent();
+				responseIntent.setAction(RECEIVE_CHANGEPOWER);
+				responseIntent.putExtra(LAMP_DATA, lamp);
+				LocalBroadcastManager.getInstance(this).sendBroadcast(responseIntent);
+			}
+			catch(Exception ex){
+				ex.printStackTrace();
+			}
 		}
 		else{
 			//FIXME: gerar erro?
@@ -87,12 +97,17 @@ public class LampService extends LongLivedIntentService{
 		long lampId = intent.getLongExtra(LAMP_ID_DATA, 0);
 		float bright = intent.getFloatExtra(BRIGHT_DATA, -1);
 		if(lampId > 0 && (bright >=0 && bright <= 1)){
-			Lamp lamp = LampHomeShellClient.instance().changeLampBright(lampId, bright);
-			
-			Intent responseIntent = new Intent();
-			responseIntent.setAction(RECEIVE_CHANGEBRIGHT);
-			responseIntent.putExtra(LAMP_DATA, lamp);
-			LocalBroadcastManager.getInstance(this).sendBroadcast(responseIntent);
+			try{
+				Lamp lamp = LampHomeShellClient.instance().changeLampBright(lampId, bright);
+				
+				Intent responseIntent = new Intent();
+				responseIntent.setAction(RECEIVE_CHANGEBRIGHT);
+				responseIntent.putExtra(LAMP_DATA, lamp);
+				LocalBroadcastManager.getInstance(this).sendBroadcast(responseIntent);
+			}
+			catch(Exception ex){
+				ex.printStackTrace();
+			}
 		}
 		else{
 			//FIXME: gerar erro?
