@@ -75,10 +75,16 @@ public class LampService extends LongLivedIntentService{
 		}
 	}
 	private void changeLampPower(Intent intent) {
+		
 		long lampId = intent.getLongExtra(LAMP_ID_DATA, 0);
+		
+		Log.d("Lâmpada", "" + lampId);
+		
 		if(lampId > 0 && intent.hasExtra(POWER_DATA)){
+			
 			boolean on = intent.getBooleanExtra(POWER_DATA, false);
 			try{
+				Log.d(getClass().getName(), "Executar!!!");
 				Lamp lamp = LampHomeShellClient.instance().changeLampPower(lampId, on);
 				Intent responseIntent = new Intent();
 				responseIntent.setAction(RECEIVE_CHANGEPOWER);

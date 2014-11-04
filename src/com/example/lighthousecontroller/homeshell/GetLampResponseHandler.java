@@ -14,7 +14,8 @@ public class GetLampResponseHandler implements ResponseHandler<Lamp> {
 	public Lamp handleResponse(HttpResponse response)
 			throws ClientProtocolException, IOException {
 		// TODO Auto-generated method stub
-		return null;
+		
+		return new Lamp(1, "Lampada principal", true);
 	}
 
 }

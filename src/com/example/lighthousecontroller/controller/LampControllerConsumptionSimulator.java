@@ -71,11 +71,11 @@ public class LampControllerConsumptionSimulator {
 		if(lampShouldChange()){ //Mudar status de energia
 			//Inverte estado da lâmpada
 			boolean changedTo = !someLamp.isOn();
-			controller.requestChangePower(someLamp, changedTo);
+//			controller.requestChangePower(someLamp, changedTo);
 		}
 		else if(lampShouldChange()){ //Mudar status de brilho
 			float newBright = random.nextFloat();
-			controller.requestChangeBright(someLamp, newBright);
+//			controller.requestChangeBright(someLamp, newBright);
 		}
 		ConsumptionEvent event =  calculateConsumption(someLamp);
 		someLamp.addConsumptionEvent(event);

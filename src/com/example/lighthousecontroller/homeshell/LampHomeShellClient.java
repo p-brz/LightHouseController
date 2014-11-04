@@ -7,11 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClients;
+
+import android.util.Log;
 
 import com.example.lighthousecontroller.model.ApplianceGroup;
 import com.example.lighthousecontroller.model.Lamp;
@@ -40,33 +44,54 @@ public class LampHomeShellClient {
 	/** Consulta o webservice sobre os grupos de lâmpadas e atualiza os dados no banco de dados
 	 * @throws IOException 
 	 * @throws ClientProtocolException */
-	public List<ApplianceGroup> getGroups() throws ClientProtocolException, IOException {
-		CloseableHttpClient httpclient = HttpClients.createDefault();
+	public List<ApplianceGroup> getGroups() {
+		HttpClient httpclient = new DefaultHttpClient();
 		HttpGet httpget = new HttpGet(getGroupsUrl());
 		
 		ResponseHandler<List<ApplianceGroup> > rh = new GetGroupsResponseHandler();
 
-		List<ApplianceGroup> response = httpclient.execute(httpget, rh);
+		List<ApplianceGroup> response = null;
+		try {
+			response = httpclient.execute(httpget, rh);
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		return response;
 	}
-	public Lamp getLamp(long lampId) throws ClientProtocolException, IOException {
-		CloseableHttpClient httpclient = HttpClients.createDefault();
+	public Lamp getLamp(long lampId) {
+		HttpClient httpclient = new DefaultHttpClient();
 		HttpGet httpget = new HttpGet(getLampUrl(lampId));
 		
 		ResponseHandler<Lamp > rh = new GetLampResponseHandler();
 
-		Lamp response = httpclient.execute(httpget, rh);
+		Lamp response = null;
+		try {
+			response = httpclient.execute(httpget, rh);
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		return response;
 	}
 	public Lamp changeLampPower(long lampId, boolean on) throws ClientProtocolException, IOException {
-		CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpClient httpclient = new DefaultHttpClient();
 		HttpPost httppost = new HttpPost(changeLampPowerUrl(lampId, on));
 		
 		ResponseHandler<Lamp > rh = new ChangeLampPowerResponseHandler();
 		Lamp response = httpclient.execute(httppost, rh);
 
+		Log.d("Lâmpada", "Executed post!");
+		
+		
 		return response;
 	}
 	
@@ -105,7 +130,7 @@ public class LampHomeShellClient {
 	}
 
 	private String getServerUrl() {
-		return "";
+		return "http://192.168.43.38/nightingale/home-shell";
 	}
 
 	private URI getGroupsUrl() {
