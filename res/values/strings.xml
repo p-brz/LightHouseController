@@ -10,6 +10,7 @@
     <string name="lampconsumption_graph_label">Consumo</string>
     <string name="hello_world">Hello world!</string>
     <string name="login_image_desc">Login</string>
+    <string name="login_server_label">Servidor:</string>
     <string name="login_login_label">Login:</string>
     <string name="login_password_label">Senha:</string>
     <string name="login_submit_button">Enviar</string>

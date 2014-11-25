@@ -1,67 +1,90 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="${relativePackage}.${activityClass}" >
+    android:layout_height="match_parent">
+    <LinearLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical"
+	    android:layout_marginLeft="20dp"
+	    android:layout_marginRight="20dp"
+	    tools:context="${relativePackage}.${activityClass}" >
     
-    <ImageView
-        android:id="@+id/imgLogo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:contentDescription="@string/login_image_desc"
-        android:src="@drawable/logo_splash" />
+	    <ImageView
+	        android:id="@+id/imgLogo"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="10dp"
+	        android:contentDescription="@string/login_image_desc"
+        	android:layout_gravity="center_horizontal"
+	        android:src="@drawable/logo_splash" />
+	    
+	    <TextView
+	        android:id="@+id/serverLabel"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="15dp"
+	        android:text="@string/login_server_label" />
+	    
+	    <LinearLayout 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal">
+	        
+		    <Spinner android:id="@+id/serversSpinner" 
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"/>
+		    <ImageButton 
+		        android:id="@+id/login_editServerButton"
+		        android:layout_height="wrap_content"
+		        android:layout_width="wrap_content"
+		        android:src="@drawable/ic_action_edit"
+		        android:background="?attr/selectableItemBackground"/>
+		    
+	    </LinearLayout>
+	
+	    <TextView
+	        android:id="@+id/loginLabel"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="15dp"
+	        android:text="@string/login_login_label" />
+	    
+	    <EditText
+	        android:id="@+id/loginField"
+	        android:inputType="text"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:ems="10" >
+	
+	        <requestFocus />
+	    </EditText>
+	
+	    <TextView
+	        android:id="@+id/passLabel"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="15dp"
+	        android:text="@string/login_password_label" />
+	    
+	    <EditText
+	        android:id="@+id/passField"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:ems="10"
+	        android:inputType="textPassword" />
+	
+	    
+	    <Button
+	        android:id="@+id/button1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="19dp"
+        	android:layout_gravity="center_horizontal"
+	        android:text="@string/login_submit_button" 
+	        android:onClick="submitLogin"/>
     
-    <TextView
-        android:id="@+id/loginLabel"
-        android:layout_below="@+id/imgLogo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/loginField"
-        android:layout_marginTop="15dp"
-        android:text="@string/login_login_label" />
+	</LinearLayout>
     
-    <EditText
-        android:id="@+id/loginField"
-        android:inputType="text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/loginLabel"
-        android:layout_centerHorizontal="true"
-        android:ems="10" >
-
-        <requestFocus />
-    </EditText>
-
-    <TextView
-        android:id="@+id/passLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/loginField"
-        android:layout_alignLeft="@+id/passField"
-        android:layout_marginTop="15dp"
-        android:text="@string/login_password_label" />
-    
-    <EditText
-        android:id="@+id/passField"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/loginField"
-        android:layout_alignRight="@+id/loginField"
-        android:layout_below="@+id/passLabel"
-        android:ems="10"
-        android:inputType="textPassword" />
-
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/passField"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="19dp"
-        android:text="@string/login_submit_button" 
-        android:onClick="submitLogin"/>
-    
-</RelativeLayout>
+</ScrollView>
