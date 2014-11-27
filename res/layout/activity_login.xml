@@ -37,10 +37,28 @@
 		        android:layout_weight="1"/>
 		    <ImageButton 
 		        android:id="@+id/login_editServerButton"
+		        android:layout_margin="5dp"
 		        android:layout_height="wrap_content"
 		        android:layout_width="wrap_content"
 		        android:src="@drawable/ic_action_edit"
-		        android:background="?attr/selectableItemBackground"/>
+		        android:background="?attr/selectableItemBackground"
+		        android:onClick="onClickEditServerButton"/>
+		    <ImageButton 
+		        android:id="@+id/login_createServerButton"
+		        android:layout_margin="5dp"
+		        android:layout_height="wrap_content"
+		        android:layout_width="wrap_content"
+		        android:src="@drawable/ic_action_new"
+		        android:background="?attr/selectableItemBackground"
+		        android:onClick="onClickCreateServerButton"/>
+		    <ImageButton 
+		        android:id="@+id/login_deleteServerButton"
+		        android:layout_margin="5dp"
+		        android:layout_height="wrap_content"
+		        android:layout_width="wrap_content"
+		        android:src="@drawable/ic_action_discard"
+		        android:background="?attr/selectableItemBackground"
+		        android:onClick="onClickDeleteServerButton"/>
 		    
 	    </LinearLayout>
 	

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:stretchColumns="1" 
+    android:paddingLeft="10dp" 
+    android:paddingRight="10dp">
+    
+	<TableRow >
+	    <TextView 
+	        android:text="@string/editServer_labelName"/>
+	    <EditText 
+	        android:id="@+id/editServer_fieldName"
+	        android:inputType="text"
+	        android:textAppearance="?android:attr/textAppearanceLarge"/>
+	</TableRow>
+	
+	<TableRow >
+	    <TextView 
+	        android:text="@string/editServer_labelUrl"/>
+	    <EditText 
+	        android:id="@+id/editServer_fieldUrl"
+	        android:inputType="textUri"
+	        android:textAppearance="?android:attr/textAppearanceLarge"/>
+	</TableRow>
+    
+</TableLayout>
