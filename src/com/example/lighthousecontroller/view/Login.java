@@ -96,13 +96,8 @@ public class Login extends FragmentActivity {
 			@Override
 			public void onResponse(boolean positive) {
 				if(positive){
-					editServer(serverToEdit);
+					saveServer(serverToEdit);
 				}
-			}
-
-			private void editServer(final HomeServer serverToEdit) {
-				serverToEdit.getClass();
-				adapter.notifyDataSetChanged();
 			}
 		});
 		simpleDialogFragment.show(getSupportFragmentManager(), EDIT_SERVER_DIALOG_TAG);
@@ -127,6 +122,10 @@ public class Login extends FragmentActivity {
 	}
 	public void onClickDeleteServerButton(View view){
 		final HomeServer selectedServer = (HomeServer) serversSpinner.getSelectedItem();
+		if(selectedServer == null){
+			return;
+		}
+		
 		SimpleDialogFragment simpleDialogFragment = new SimpleDialogFragment();
 		simpleDialogFragment.setDialogMessage("Excluir configurações de servidor?");
 		simpleDialogFragment.setOkMessage("Ok");
@@ -142,14 +141,27 @@ public class Login extends FragmentActivity {
 		simpleDialogFragment.show(getSupportFragmentManager(), DELETE_SERVER_DIALOG_TAG);
 	}
 	protected void addHomeServer(final HomeServer newServer) {
-		adapter.add(newServer);
+		HomeServer createdServer = Data.instance().getServerDAO().save(newServer);
+		adapter.add(createdServer);
 		adapter.notifyDataSetChanged();
 		serversSpinner.setSelection(adapter.getCount() - 1);
 	}
-	protected void removeHomeServer(HomeServer serverToDelete) {
-		this.adapter.remove(serverToDelete);
+	protected void saveServer(final HomeServer serverToEdit) {
+		HomeServer updatedServer = Data.instance().getServerDAO().save(serverToEdit);
+		serverToEdit.set(updatedServer);
 		adapter.notifyDataSetChanged();
 	}
+	protected void removeHomeServer(HomeServer serverToDelete) {
+		try{
+			Data.instance().getServerDAO().delete(serverToDelete);
+			this.adapter.remove(serverToDelete);
+			adapter.notifyDataSetChanged();
+		}
+		catch(Exception ex){
+			showCannotDeleteServerException();
+		}
+	}
+
 	public void submitLogin(View v){
 		HomeServer selectedServer = (HomeServer) serversSpinner.getSelectedItem();
 		if(verifyServer(selectedServer)){
@@ -184,9 +196,15 @@ public class Login extends FragmentActivity {
 		return false;
 	}
 
+	private void showCannotDeleteServerException() {
+		showAlertDialog("Um erro ocorreu e dados deste servidor não puderam ser excluídos.");
+	}
 	private void showInvalidServerErrorMessage() {
+		showAlertDialog("Por favor selecione um servidor válido ou adicione um novo.");
+	}
+	private void showAlertDialog(String message){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		 builder.setMessage("Por favor selecione um servidor válido ou adicione um novo.")
+		 builder.setMessage(message)
 		        .setNeutralButton("Ok", new OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {

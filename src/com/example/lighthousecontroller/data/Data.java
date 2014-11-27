@@ -38,6 +38,7 @@ public class Data {
 	private List<Table> createTables() {
 		List<Table> tables = new ArrayList<>();
 		tables.addAll(lampDAO.getTables());
+		tables.addAll(serverDAO.getTables());
 		return tables;
 	}
 
