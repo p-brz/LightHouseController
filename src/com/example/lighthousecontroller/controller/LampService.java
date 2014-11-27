@@ -51,7 +51,11 @@ public class LampService extends LongLivedIntentService{
 	private void getGroups(Intent intent) {		
 		List<ApplianceGroup> groups = LampHomeShellClient.instance().getGroups();
 
+		if(groups == null){
+			return;
+		}
 		Log.d(getClass().getName(),"Get groups from HomeShellClient: " + groups);
+		
 		for(ApplianceGroup group : groups){
 			Log.d(getClass().getName(),"Lamps in group " + group.getName() +": " + group.getAppliances());
 		}

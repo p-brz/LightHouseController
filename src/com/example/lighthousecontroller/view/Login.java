@@ -1,5 +1,9 @@
 package com.example.lighthousecontroller.view;
 
+import java.util.List;
+
+import org.apache.commons.validator.routines.UrlValidator;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,7 +11,6 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lighthousecontroller.R;
+import com.example.lighthousecontroller.data.Data;
+import com.example.lighthousecontroller.homeshell.LampHomeShellClient;
 import com.example.lighthousecontroller.model.HomeServer;
 import com.example.lighthousecontroller.view.SimpleDialogFragment.DialogResponseListener;
 
@@ -60,7 +65,6 @@ public class Login extends FragmentActivity {
 		}
 		
 	}
-	private static final HomeServer NOVO_HOME_SERVER = new HomeServer("Inserir Novo","");
 	private static final String EDIT_SERVER_DIALOG_TAG = "EDIT_SERVER_DIALOG_TAG";
 	private static final String CREATE_SERVER_DIALOG_TAG = "CREATE_SERVER_DIALOG_TAG";
 	private static final String DELETE_SERVER_DIALOG_TAG = "DELETE_SERVER_DIALOG_TAG";
@@ -73,8 +77,8 @@ public class Login extends FragmentActivity {
 		setContentView(R.layout.activity_login);
 		
 		adapter = new ServersAdapter(this);
-		adapter.addAll(new HomeServer("Server exemplo", "http://MeuServer.com"), 
-				new HomeServer("Outro servidor", "http://outroservidor.com"));
+		List<HomeServer> servers = Data.instance().getServerDAO().getServers();
+		adapter.addAll(servers);
 		setupView();
 	}
 
@@ -147,11 +151,14 @@ public class Login extends FragmentActivity {
 		adapter.notifyDataSetChanged();
 	}
 	public void submitLogin(View v){
-		if(this.serversSpinner.getSelectedItem() == NOVO_HOME_SERVER){
+		HomeServer selectedServer = (HomeServer) serversSpinner.getSelectedItem();
+		if(verifyServer(selectedServer)){
+			LampHomeShellClient.instance().setServerUrl(selectedServer.getServerUrl());
+		}
+		else{
 			showInvalidServerErrorMessage();
 			return;
 		}
-		
 		EditText loginView = (EditText) findViewById(R.id.loginField);
 		EditText passwordView = (EditText) findViewById(R.id.passField);
 		
@@ -168,6 +175,15 @@ public class Login extends FragmentActivity {
 		}
 	}
 	
+	protected boolean verifyServer(HomeServer selectedServer) {
+		if(selectedServer != null){
+			UrlValidator urlValidator = new UrlValidator();
+			
+			return urlValidator.isValid(selectedServer.getServerUrl());
+		}
+		return false;
+	}
+
 	private void showInvalidServerErrorMessage() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		 builder.setMessage("Por favor selecione um servidor válido ou adicione um novo.")

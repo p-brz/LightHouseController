@@ -36,6 +36,7 @@ public class LampHomeShellClient {
 	boolean generatingData = false;
 	final List<Lamp> lamps;
 	final List<ApplianceGroup> groups;
+	private String serverUrl;
 	public LampHomeShellClient() {
 		lamps = new ArrayList<>();
 		groups = new ArrayList<>();
@@ -129,8 +130,11 @@ public class LampHomeShellClient {
 		return null;
 	}
 
-	private String getServerUrl() {
-		return "http://192.168.43.38/nightingale/home-shell";
+	public String getServerUrl() {
+		return serverUrl;
+	}
+	public void setServerUrl(String serverUrl){
+		this.serverUrl = serverUrl;
 	}
 
 	private URI getGroupsUrl() {

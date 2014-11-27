@@ -18,11 +18,13 @@ public class Data {
 	
 	private LightHouseControllerDatabase database;
 	private LampDAO lampDAO;
+	private ServerDAO serverDAO;
 	
 	public Data() {
 		Context context=LightHouseControllerApplication.getApplication();
 		database = new LightHouseControllerDatabase(context);
 		lampDAO = new LampDAO(context, database);
+		serverDAO = new ServerDAO(context, database);
 		setupDatabase();
 	}
 	
@@ -41,5 +43,8 @@ public class Data {
 
 	public LampDAO getLampDAO(){
 		return lampDAO;
+	}
+	public ServerDAO getServerDAO(){
+		return serverDAO;
 	}
 }
