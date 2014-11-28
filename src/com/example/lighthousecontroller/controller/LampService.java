@@ -57,6 +57,9 @@ public class LampService extends LongLivedIntentService{
 		Log.d(getClass().getName(),"Get groups from HomeShellClient: " + groups);
 		
 		for(ApplianceGroup group : groups){
+			if(group == null){
+				continue;
+			}
 			Log.d(getClass().getName(),"Lamps in group " + group.getName() +": " + group.getAppliances());
 		}
 		

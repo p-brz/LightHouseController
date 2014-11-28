@@ -24,12 +24,14 @@ import com.example.lighthousecontroller.controller.LampObserver;
 import com.example.lighthousecontroller.model.ConsumptionEvent;
 import com.example.lighthousecontroller.model.Lamp;
 
-public class LampDetailsFragment extends Fragment implements ConsumptionObserver, LampObserver{
+public class LampDetailsFragment extends Fragment implements ConsumptionObserver, LampObserver, OnCheckedChangeListener{
 	public class BrightControlChanged implements OnSeekBarChangeListener {
 		@Override
 		public void onStopTrackingTouch(SeekBar seekBar) {
-			// TODO Auto-generated method stub
-			
+			if(lamp != null){
+				LampController.getInstance()
+				  .requestChangeBright(lamp, seekBar.getProgress() /((float)seekBar.getMax()));
+			}
 		}
 
 		@Override
@@ -40,10 +42,10 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 
 		@Override
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-			if(fromUser && lamp != null){
-				LampController.getInstance()
-				  .requestChangeBright(lamp, progress /((float)seekBar.getMax()));
-			}
+//			if(fromUser && lamp != null){
+//				LampController.getInstance()
+//				  .requestChangeBright(lamp, progress /((float)seekBar.getMax()));
+//			}
 		}
 	}
 	private static final float MIN_ICON_ALPHA = 0.3f;
@@ -121,14 +123,7 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 		
 		brightControl.setOnSeekBarChangeListener(new BrightControlChanged());
 
-		powerControl.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if(lamp != null && lamp.isValid()){
-					LampController.getInstance().requestChangePower(lamp, isChecked);
-				}
-			}
-		});
+		powerControl.setOnCheckedChangeListener(this);
 		
 		
 		viewsReady = true;
@@ -200,7 +195,10 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 	private void updateLampStatus() {
 		boolean lampIsOn = (lamp != null && lamp.isOn());
 		lampIconView.setImageResource( lampIsOn? R.drawable.ic_lamp_on : R.drawable.ic_lamp_off);
+		
+		powerControl.setOnCheckedChangeListener(null);
 		powerControl.setChecked(lampIsOn);
+		powerControl.setOnCheckedChangeListener(this);
 		if(!lampIsOn){
 			brightControl.setProgress(0);
 		}
@@ -208,6 +206,13 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 			brightControl.setProgress((int)(lamp.getBright()*brightControl.getMax()));
 			//Define alpha para ícone da imagem baseado no seu brilho
 			ViewCompat.setAlpha(lampIconView, (1f - MIN_ICON_ALPHA)*lamp.getBright() + MIN_ICON_ALPHA);
+		}
+	}
+	/* ******************************* OnCheckedChangeListener *********************************/
+	@Override
+	public void onCheckedChanged(CompoundButton arg0, boolean isChecked) {
+		if(lamp != null && lamp.isValid()){
+			LampController.getInstance().requestChangePower(lamp, isChecked);
 		}
 	}
 

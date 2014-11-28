@@ -15,7 +15,7 @@ public class LampMonitor extends LongLivedIntentService{
 
 		@Override
 		public void onTick(long millisUntilFinished) {
-			getLampsIfModified();
+//			getLampsIfModified();
 		}
 
 		@Override
@@ -26,37 +26,53 @@ public class LampMonitor extends LongLivedIntentService{
 	interface ServiceExecutor{
 		void execute(Intent intent, int startId);
 	}
-	private static final String GET_LAMPS = "GET LAMPS";
-	private static final String GET_LAMPGROUPS = "GET LAMPGROUPS";
-	private static final String MODIFIED_SINCE = "MODIFIED SINCE";
 	
 	private final Map<String, ServiceExecutor> executors;
 
-	class GetLampsExecutor implements ServiceExecutor{
+//	class GetLampsExecutor implements ServiceExecutor{
+//		@Override
+//		public void execute(Intent intent, int startId) {
+//			// TODO Auto-generated method stub
+//			
+//		}
+//	}
+//	class GetLampGroupsExecutor implements ServiceExecutor{
+//
+//		@Override
+//		public void execute(Intent intent, int startId) {
+//			//TODO: fazer requisição a servidor
+//			Date modifiedSince = null;
+//			if(intent.getExtras() != null){
+////				modifiedSince = intent.getExtras().getString(MODIFIED_SINCE);
+//			}
+//		}
+//	}
+	
+	class SyncNowExecutor implements ServiceExecutor{
 		@Override
 		public void execute(Intent intent, int startId) {
-			// TODO Auto-generated method stub
-			
-		}
-	}
-	class GetLampGroupsExecutor implements ServiceExecutor{
-
-		@Override
-		public void execute(Intent intent, int startId) {
-			//TODO: fazer requisição a servidor
-			Date modifiedSince = null;
-			if(intent.getExtras() != null){
-//				modifiedSince = intent.getExtras().getString(MODIFIED_SINCE);
-			}
+			Intent getGroupsIntent = new Intent();
+			getGroupsIntent.setAction(LampService.GET_GROUPS);
+			startService(getGroupsIntent);
 		}
 	}
 	
 	public LampMonitor() {
 		executors = new HashMap<>();
-		executors.put(GET_LAMPS, new GetLampsExecutor());
-		executors.put(GET_LAMPGROUPS, new GetLampGroupsExecutor());
 	}
 	
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		
+		startMonitor();
+	}
+	
+	private void startMonitor() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	@Override
 	protected void onHandleIntent(Intent intent, int startId) {
 		for(String key : executors.keySet()){
