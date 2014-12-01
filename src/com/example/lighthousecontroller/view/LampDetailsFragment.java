@@ -8,9 +8,8 @@ import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -24,7 +23,11 @@ import com.example.lighthousecontroller.controller.LampObserver;
 import com.example.lighthousecontroller.model.ConsumptionEvent;
 import com.example.lighthousecontroller.model.Lamp;
 
-public class LampDetailsFragment extends Fragment implements ConsumptionObserver, LampObserver, OnCheckedChangeListener{
+public class LampDetailsFragment extends Fragment 
+								 implements ConsumptionObserver
+								 			, LampObserver
+								 			, OnClickListener
+{
 	public class BrightControlChanged implements OnSeekBarChangeListener {
 		@Override
 		public void onStopTrackingTouch(SeekBar seekBar) {
@@ -35,17 +38,14 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 		}
 
 		@Override
-		public void onStartTrackingTouch(SeekBar seekBar) {
-			// TODO Auto-generated method stub
-			
+		public void onStartTrackingTouch(SeekBar seekBar) 
+		{
+			//Do nothing
 		}
 
 		@Override
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//			if(fromUser && lamp != null){
-//				LampController.getInstance()
-//				  .requestChangeBright(lamp, progress /((float)seekBar.getMax()));
-//			}
+			//Do nothing
 		}
 	}
 	private static final float MIN_ICON_ALPHA = 0.3f;
@@ -53,9 +53,10 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 	private Lamp lamp;
 	
 	private ImageView lampIconView;
+	private TextView nameView;
 	private ToggleButton powerControl;
 	private SeekBar brightControl;
-	private TextView nameView;
+	private OnSeekBarChangeListener userChangeBrightListener;
 	
 	private ConsumptionGraphFragment consumptionGraphFragment;
 	
@@ -64,6 +65,7 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 	public LampDetailsFragment() {
 		Log.d(getClass().getName(), "Criando fragmento! " + this.toString());
 		consumptionGraphFragment = new ConsumptionGraphFragment();
+		userChangeBrightListener = new BrightControlChanged();
 	}
 	
 	@Override
@@ -120,11 +122,10 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 		getChildFragmentManager().beginTransaction()
 									.add(R.id.lampDetails_graphContainer, consumptionGraphFragment)
 									.commit();
-		
-		brightControl.setOnSeekBarChangeListener(new BrightControlChanged());
 
-		powerControl.setOnCheckedChangeListener(this);
-		
+//		brightControl.setOnSeekBarChangeListener(new BrightControlChanged());
+		brightControl.setOnSeekBarChangeListener(userChangeBrightListener);
+		powerControl.setOnClickListener(this);
 		
 		viewsReady = true;
 	}
@@ -141,22 +142,6 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 	}
 
 	/* *********************************** LampObserver ************************************************/
-	
-//	@Override
-//	public void changedPowerStatus(Lamp lamp) {
-////		assertValidLocalLamp();
-////		assertValidLamp(lamp);
-////		this.lamp.setOn(lamp.isOn());
-//		updateLampStatus();
-//	}
-//
-//	@Override
-//	public void changedBright(Lamp lamp) {
-//		assertValidLamp(lamp);
-//		this.lamp.setBright(lamp.getBright());
-//		this.lamp.setOn(lamp.isOn());
-//		updateLampStatus();
-//	}
 	@Override
 	public void lampUpdated(Lamp lamp) {
 		assertValidLocalLamp();
@@ -196,9 +181,10 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 		boolean lampIsOn = (lamp != null && lamp.isOn());
 		lampIconView.setImageResource( lampIsOn? R.drawable.ic_lamp_on : R.drawable.ic_lamp_off);
 		
-		powerControl.setOnCheckedChangeListener(null);
+		//Desativa listener para evitar que requisição seja feita novamente
+		brightControl.setOnSeekBarChangeListener(null);
+		
 		powerControl.setChecked(lampIsOn);
-		powerControl.setOnCheckedChangeListener(this);
 		if(!lampIsOn){
 			brightControl.setProgress(0);
 		}
@@ -207,12 +193,15 @@ public class LampDetailsFragment extends Fragment implements ConsumptionObserver
 			//Define alpha para ícone da imagem baseado no seu brilho
 			ViewCompat.setAlpha(lampIconView, (1f - MIN_ICON_ALPHA)*lamp.getBright() + MIN_ICON_ALPHA);
 		}
+
+		//Reabilita listener apos alterar interface
+		brightControl.setOnSeekBarChangeListener(userChangeBrightListener);
 	}
-	/* ******************************* OnCheckedChangeListener *********************************/
+	/* *********************************** OnClickListener **************************************/
 	@Override
-	public void onCheckedChanged(CompoundButton arg0, boolean isChecked) {
-		if(lamp != null && lamp.isValid()){
-			LampController.getInstance().requestChangePower(lamp, isChecked);
+	public void onClick(View view) {
+		if(view == powerControl && lamp != null && lamp.isValid()){
+			LampController.getInstance().requestChangePower(lamp, powerControl.isChecked());
 		}
 	}
 

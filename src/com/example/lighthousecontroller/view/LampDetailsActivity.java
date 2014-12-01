@@ -7,7 +7,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.lighthousecontroller.R;
-import com.example.lighthousecontroller.controller.LampController;
 import com.example.lighthousecontroller.model.Lamp;
 
 public class LampDetailsActivity extends ActionBarActivity {

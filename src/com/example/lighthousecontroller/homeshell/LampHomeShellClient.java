@@ -106,62 +106,30 @@ public class LampHomeShellClient {
 		return null;
 	}
 
-//	public Lamp changeLampBright(long lampId, float bright) throws ClientProtocolException, IOException {
-//		CloseableHttpClient httpclient = HttpClients.createDefault();
-//		HttpPost httppost = new HttpPost(changeLampBrightUrl(lampId));
-//	
-//		ResponseHandler<Lamp > rh = new ChangeLampBrightResponseHandler();
-//		Lamp response = httpclient.execute(httppost, rh);
-//
-//		return response;
-//	}
-
-//	public Lamp changeLampBright(long lampId, float bright) throws ClientProtocolException, IOException {
-//		HttpClient httpclient = new DefaultHttpClient();
-////		HttpPost httppost = new HttpPost(changeLampPowerUrl(lampId, on));
-//		HttpGet request = new HttpGet(changeLampBrightUrl(lampId, bright));
-//
-////		ResponseHandler<Lamp > rh = new ChangeLampPowerResponseHandler();
-//		ResponseHandler<Lamp > rh = new GetLampResponseHandler();
-//		Lamp response = httpclient.execute(request, rh);
-//
-//		Log.d("Lâmpada", "Executed post!");
-//		
-//		
-//		return response;
-//	}
 	public Lamp changeLampBright(long lampId, float bright) throws ClientProtocolException, IOException {
 		HttpClient httpclient = new DefaultHttpClient();
-//		HttpPost httppost = new HttpPost(changeLampPowerUrl(lampId, on));
 		HttpPost request = new HttpPost(changeLampBrightUrl(lampId, bright));
 		request.setHeader("Content-Type", "application/x-www-form-urlencoded");
 		String param = "brilho=" + (int)(bright *100);
 		StringEntity stringEntity = new StringEntity(param);
 		request.setEntity(stringEntity);
-//		ResponseHandler<Lamp > rh = new ChangeLampPowerResponseHandler();
+		
 		ResponseHandler<Lamp > rh = new GetLampResponseHandler();
 		Lamp response = httpclient.execute(request, rh);
 
 		Log.d("Lâmpada", "Executed post!");
-		
 		
 		return response;
 	}
 	private URI changeLampBrightUrl(long lampId, float bright) {
 		try {
 			String service = "definir_brilho";
-//			String param = "?brilho=" + (int)(bright *100);
 			return new URI(getServerUrl() + "/appliances/" + lampId + "/services/" + service + "/");
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
 	}
-
-//	public Lamp changeLampBright(long lampId, float bright) throws ClientProtocolException, IOException {
-//		return getLamp(lampId);
-//	}
 
 	private URI getLampUrl(long lampId) {
 		try {

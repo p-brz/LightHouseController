@@ -96,7 +96,7 @@ public class GetLampResponseHandler implements ResponseHandler<Lamp> {
 				Log.d(getClass().getName(),"ligada: " + state.getInt(name));
 				lamp.setOn(state.getInt(name) == 1);
 			}
-			else if(name.equals("bright")){
+			else if(name.equals("brilho")){
 				lamp.setBright(state.getInt(name)/100f);
 			}
 		}
