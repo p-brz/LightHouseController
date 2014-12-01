@@ -1,13 +1,10 @@
 package com.example.lighthousecontroller.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.http.client.ClientProtocolException;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +12,6 @@ import android.util.Log;
 
 import com.example.lighthousecontroller.LightHouseControllerApplication;
 import com.example.lighthousecontroller.data.Data;
-import com.example.lighthousecontroller.homeshell.LampHomeShellClient;
 import com.example.lighthousecontroller.model.ApplianceGroup;
 import com.example.lighthousecontroller.model.ConsumptionEvent;
 import com.example.lighthousecontroller.model.Lamp;

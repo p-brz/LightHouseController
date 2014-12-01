@@ -2,6 +2,7 @@ package com.example.lighthousecontroller.view;
 
 import java.util.List;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
@@ -19,6 +20,7 @@ import android.widget.ToggleButton;
 import com.example.lighthousecontroller.R;
 import com.example.lighthousecontroller.controller.ConsumptionObserver;
 import com.example.lighthousecontroller.controller.LampController;
+import com.example.lighthousecontroller.controller.LampMonitor;
 import com.example.lighthousecontroller.controller.LampObserver;
 import com.example.lighthousecontroller.model.ConsumptionEvent;
 import com.example.lighthousecontroller.model.Lamp;
@@ -87,6 +89,7 @@ public class LampDetailsFragment extends Fragment
 			LampController.getInstance().addConsumptionObserver(this, lamp.getId());
 			LampController.getInstance().addLampObserver(this, lamp.getId());
 			Lamp readedLamp = LampController.getInstance().getLampStatus(lamp);
+			startLampMonitor(lamp);
 			if(readedLamp != null){
 				this.lamp.set(readedLamp);
 			}
@@ -96,13 +99,27 @@ public class LampDetailsFragment extends Fragment
 			updateView();
 		}
 	}
-
 	@Override
 	public void onPause() {
 		super.onPause();
 		LampController.getInstance().removeConsumptionObserver(this, lamp.getId());
 		LampController.getInstance().removeLampObserver(this, lamp.getId());
+		stopLampMonitor(lamp);
 	}
+	
+	private void startLampMonitor(Lamp lamp) {
+		Intent intent = new Intent(getActivity(), LampMonitor.class);
+		intent.setAction(LampMonitor.BEGIN_OBSERVE_LAMP);
+		intent.putExtra(LampMonitor.LAMPID_DATA, lamp.getId());
+		getActivity().startService(intent);
+	}
+	private void stopLampMonitor(Lamp lamp) {
+		Intent intent = new Intent(getActivity(), LampMonitor.class);
+		intent.setAction(LampMonitor.STOP_OBSERVE_LAMP);
+		intent.putExtra(LampMonitor.LAMPID_DATA, lamp.getId());
+		getActivity().startService(intent);
+	}
+
 	public Lamp getLamp() {
 		return lamp;
 	}

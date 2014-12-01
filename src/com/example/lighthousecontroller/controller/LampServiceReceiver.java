@@ -93,10 +93,7 @@ public class LampServiceReceiver extends BroadcastReceiver {
 		}
 
 		@SuppressWarnings("unchecked")
-		private void receivedGroups(Context context, Intent intent) {
-			Toast.makeText(context, "Received groups: " + intent.getSerializableExtra(LampService.GROUPS_DATA)
-					, Toast.LENGTH_LONG).show();
-			
+		private void receivedGroups(Context context, Intent intent) {			
 			List<ApplianceGroup> lampGroups = (List<ApplianceGroup>)intent.getSerializableExtra(LampService.GROUPS_DATA);
 			Data.instance().getLampDAO().setGroupsAndLamps(lampGroups);
 //			List<Lamp> lamps = new ArrayList<>();

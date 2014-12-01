@@ -12,17 +12,21 @@ import com.example.lighthousecontroller.model.ApplianceGroup;
 import com.example.lighthousecontroller.model.Lamp;
 
 public class LampService extends LongLivedIntentService{
+	
+	/* Identificadores para ações utilizados por clientes para fazer requisições */
 	private static final String CLASS_NAME         = LampService.class.getName();
 	public static final String GET_GROUPS          = CLASS_NAME + ".GET_GROUPS";
 	public static final String GET_LAMP            = CLASS_NAME + ".GET_LAMP";
 	public static final String CHANGE_LAMP_POWER   = CLASS_NAME + ".CHANGE_LAMP_POWER";
 	public static final String CHANGE_LAMP_BRIGHT  = CLASS_NAME + ".CHANGE_LAMP_BRIGHT";
 
+	/* Identificadores para ações de BroadcastReceivers que recebem resultados de requisições */
 	public static final String RECEIVE_GROUPS       = CLASS_NAME + ".RECEIVE_GROUPS";
 	public static final String RECEIVE_LAMP         = CLASS_NAME + ".RECEIVE_LAMP";
 	public static final String RECEIVE_CHANGEPOWER  = CLASS_NAME + ".RECEIVE_CHANGEPOWER";
 	public static final String RECEIVE_CHANGEBRIGHT = CLASS_NAME + ".RECEIVE_CHANGEBRIGHT";
 	
+	/* Identificadores de Extras */
 	public static final String GROUPS_DATA  = CLASS_NAME + ".GROUPS_DATA";
 	public static final String LAMP_ID_DATA = CLASS_NAME + ".LAMP_ID_DATA";
 	public static final String LAMP_DATA    = CLASS_NAME + ".LAMP_DATA";
@@ -45,6 +49,9 @@ public class LampService extends LongLivedIntentService{
 		}
 		else if(intent.getAction().equals(CHANGE_LAMP_BRIGHT)){
 			changeLampBright(intent);
+		}
+		else{//Notificar erro?
+			return;
 		}
 	}
 

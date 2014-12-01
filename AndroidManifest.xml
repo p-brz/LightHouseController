@@ -51,6 +51,8 @@
         
         <service android:name="com.example.lighthousecontroller.controller.LampService"
             	android:exported="false"/>
+        <service android:name="com.example.lighthousecontroller.controller.LampMonitor"
+            	android:exported="false"/>
     </application>
 
 </manifest>

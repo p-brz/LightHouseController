@@ -14,7 +14,6 @@ public class LampControllerConsumptionSimulator {
 	private static final int MIN_CONSUMPTION_TIME = 100;
 	private static final int MAX_CONSUMPTION_TIME = 2000;
 	private static final String LOG_TAG = LampControllerConsumptionSimulator.class.getName();
-	private static final float CHANGE_CHANCE = 0.1f;
 	private static final double LAMP_POWER = 60;
 	private Handler handler;
 	private volatile boolean running;
@@ -68,15 +67,6 @@ public class LampControllerConsumptionSimulator {
 		
 		Log.d(getClass().getName(), "Simulando consumo para lâmpada: " + someLamp + " com id: " + someLamp.getId());
 		
-		if(lampShouldChange()){ //Mudar status de energia
-			//Inverte estado da lâmpada
-			boolean changedTo = !someLamp.isOn();
-//			controller.requestChangePower(someLamp, changedTo);
-		}
-		else if(lampShouldChange()){ //Mudar status de brilho
-			float newBright = random.nextFloat();
-//			controller.requestChangeBright(someLamp, newBright);
-		}
 		ConsumptionEvent event =  calculateConsumption(someLamp);
 		someLamp.addConsumptionEvent(event);
 		controller.fireConsumptionEvent(event);
@@ -99,10 +89,6 @@ public class LampControllerConsumptionSimulator {
 	}
 	private double millisToHours(long millis) {
 		return millis/(1000.0*3600);
-	}
-	private boolean lampShouldChange() {
-		float rand = this.random.nextFloat();
-		return (rand <= CHANGE_CHANCE);
 	}
 	private Lamp choiceRandomLamp() {
 		List<Lamp> lamps = controller.getLamps();
