@@ -50,14 +50,14 @@ public class LampDAO {
 	public Collection<? extends Table> getTables() {
 		return Arrays.asList(lampTable, applianceGroupTable, consumptionTable);
 	}
-	public List<Lamp> getLamps() {	
+	public synchronized List<Lamp> getLamps() {	
 		SQLiteDatabase database = sqliteDb.getReadableDatabase();
 		List<Lamp> lamps = readLamps(database, null, null);
 		database.close();
 		return lamps;
 	}
 
-	public List<ApplianceGroup> getGroups() {
+	public synchronized List<ApplianceGroup> getGroups() {
 		SQLiteDatabase database = sqliteDb.getReadableDatabase();
 		List<ApplianceGroup> groups = readGroups(database, null);
 		Map<Integer, List<Lamp> > groupIdToLamp = new HashMap<>();
@@ -73,12 +73,112 @@ public class LampDAO {
 		database.close();
 		return groups;
 	}
-	public Lamp getLamp(long id) {
+	public synchronized  Lamp getLamp(long id) {
 		SQLiteDatabase database = sqliteDb.getReadableDatabase();
 		List<Lamp> lamps = readLamps(database, id, null);
 		database.close();
 		if(!lamps.isEmpty()){
 			return lamps.get(0);
+		}
+		return null;
+	}
+
+	public synchronized void setGroupsAndLamps(List<ApplianceGroup> groups) {
+		SQLiteDatabase database = this.sqliteDb.getWritableDatabase();
+		database.beginTransaction();
+		try {
+			List<Lamp> allLamps = new ArrayList<Lamp>();
+			for(ApplianceGroup group : groups){
+				ContentValues values = applianceGroupTable.groupToValues(group);
+				database.insertWithOnConflict(applianceGroupTable.getName(), null, values
+						, SQLiteDatabase.CONFLICT_REPLACE);
+				
+				//Inserir ou atualizar as lâmpadas
+				for(Lamp lamp : group.getAppliances()){
+					allLamps.add(lamp);
+					
+					ContentValues lampValues = lampTable.lampToValues(lamp);
+					database.insertWithOnConflict(lampTable.getName(), null, lampValues
+							, SQLiteDatabase.CONFLICT_REPLACE);
+				}
+			}
+
+			excludeOtherGroups(database, groups);
+			excludeOtherLamps(database, allLamps);			
+			database.setTransactionSuccessful();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return;
+		}
+		finally{
+			database.endTransaction();
+			database.close();
+		}
+
+		return;
+	}
+
+
+	public synchronized void setLamps(List<Lamp> lamps) {
+		SQLiteDatabase database = this.sqliteDb.getWritableDatabase();
+		database.beginTransaction();
+		try {
+			for(Lamp lamp : lamps){
+				ContentValues lampValues = lampTable.lampToValues(lamp);
+				database.insertWithOnConflict(lampTable.getName(), null, lampValues
+						, SQLiteDatabase.CONFLICT_REPLACE);
+			}
+
+			excludeOtherLamps(database, lamps);			
+			database.setTransactionSuccessful();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return;
+		}
+		finally{
+			database.endTransaction();
+			database.close();
+		}
+
+		return;
+	}
+	public synchronized void updateLamp(Lamp newLamp) {
+		SQLiteDatabase database = sqliteDb.getReadableDatabase(); //TODO: não deveria abrir banco de dados na main thread
+		
+		ContentValues lampValues = lampTable.lampToValues(newLamp);
+
+		String whereClause = LampTable.ID_COLUMN + "=" + String.valueOf(newLamp.getId());
+		
+		
+		long rowsAffected = database.update(lampTable.getName(), lampValues, whereClause, null);
+		Log.d(getClass().getName(), "UpdateLamp. RowsAffected: " + rowsAffected);
+		
+		database.close();
+	}
+
+
+	public synchronized void addConsumption(ConsumptionEvent event) {
+		SQLiteDatabase database = sqliteDb.getReadableDatabase(); //TODO: não deveria abrir banco de dados na main thread
+		
+		ContentValues values = consumptionTable.toValues(event);
+		
+		long inserted = database.insert(consumptionTable.getName(), null, values);
+		
+		Log.d(getClass().getName(), "Inserted consumption: " + inserted);
+		
+		database.close();
+	}
+	public synchronized ConsumptionEvent getLastConsumptionEvent(long lampId) {
+		SQLiteDatabase database = sqliteDb.getReadableDatabase(); //TODO: não deveria abrir banco de dados na main thread
+		
+		Log.d(getClass().getName(), "getLastContumptionEvent. database is closed: " + !database.isOpen());
+		//TODO: consulta do banco deveria filtrar este valor e não fazer "a mão"
+		List<ConsumptionEvent> history = readLampConsumption(database, lampId);
+		
+		database.close();
+		
+		if(history.size() > 0){
+			return filterLastConsumption(history);
 		}
 		return null;
 	}
@@ -126,7 +226,11 @@ public class LampDAO {
 	}
 
 	private void readLampConsumption(SQLiteDatabase database, Lamp lamp) {
-		String whereClause = LampConsumptionTable.LAMPSOURCE_COLUMN + " = " + lamp.getId();
+		List<ConsumptionEvent> consumptionHistory = readLampConsumption(database, lamp.getId());
+		lamp.setConsumptionHistory(consumptionHistory);
+	}
+	private List<ConsumptionEvent> readLampConsumption(SQLiteDatabase database, long id) {
+		String whereClause = LampConsumptionTable.LAMPSOURCE_COLUMN + " = " + id;
 		Cursor c = database.query(consumptionTable.getName(), consumptionTable.listColumnsNames(), whereClause, null, null, null, null);
 		
 		List<ConsumptionEvent> consumptionHistory = new ArrayList<>();
@@ -134,91 +238,7 @@ public class LampDAO {
 			ConsumptionEvent event = consumptionTable.read(c);
 			consumptionHistory.add(event);
 		}
-		lamp.setConsumptionHistory(consumptionHistory);
-	}
-
-
-//	public void insertOrUpdateGroups(List<ApplianceGroup> groups) {
-//		this.groups.addAll(groups);
-//		lamps.clear();
-//		for(ApplianceGroup group : groups){
-//			ApplianceGroup currentGroup = findGroup(group);
-//			if(currentGroup == null){
-//				this.groups.add(group);
-//			}
-//			else{
-//				currentGroup.setAppliances(group.getAppliances());
-//			}
-//			this.lamps.addAll(group.getAppliances());
-//		}
-//	}
-//	private ApplianceGroup findGroup(ApplianceGroup group) {
-//		for(ApplianceGroup someGroup : this.groups){
-//			if(someGroup.getName().equals(group)){//FIXME: substituir por id
-//				return someGroup;
-//			}
-//		}
-//		return null;
-//	}
-
-	public void setGroupsAndLamps(List<ApplianceGroup> groups) {
-		SQLiteDatabase database = this.sqliteDb.getWritableDatabase();
-		database.beginTransaction();
-		try {
-			List<Lamp> allLamps = new ArrayList<Lamp>();
-			for(ApplianceGroup group : groups){
-				ContentValues values = applianceGroupTable.groupToValues(group);
-				database.insertWithOnConflict(applianceGroupTable.getName(), null, values
-						, SQLiteDatabase.CONFLICT_REPLACE);
-				
-				//Inserir ou atualizar as lâmpadas
-				for(Lamp lamp : group.getAppliances()){
-					allLamps.add(lamp);
-					
-					ContentValues lampValues = lampTable.lampToValues(lamp);
-					database.insertWithOnConflict(lampTable.getName(), null, lampValues
-							, SQLiteDatabase.CONFLICT_REPLACE);
-				}
-			}
-
-			excludeOtherGroups(database, groups);
-			excludeOtherLamps(database, allLamps);			
-			database.setTransactionSuccessful();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return;
-		}
-		finally{
-			database.endTransaction();
-			database.close();
-		}
-
-		return;
-	}
-
-
-	public void setLamps(List<Lamp> lamps) {
-		SQLiteDatabase database = this.sqliteDb.getWritableDatabase();
-		database.beginTransaction();
-		try {
-			for(Lamp lamp : lamps){
-				ContentValues lampValues = lampTable.lampToValues(lamp);
-				database.insertWithOnConflict(lampTable.getName(), null, lampValues
-						, SQLiteDatabase.CONFLICT_REPLACE);
-			}
-
-			excludeOtherLamps(database, lamps);			
-			database.setTransactionSuccessful();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return;
-		}
-		finally{
-			database.endTransaction();
-			database.close();
-		}
-
-		return;
+		return consumptionHistory;
 	}
 	
 	private void excludeOtherGroups(SQLiteDatabase database, List<ApplianceGroup> groups) {
@@ -275,40 +295,19 @@ public class LampDAO {
 	}
 
 
-//	public void updateLamp(Lamp newLamp) {
-//	Lamp oldLamp = getLamp(newLamp.getId());
-//	if(oldLamp == null){
-//		throw new IllegalArgumentException("Lâmpada de id " + newLamp.getId() + " não existe!");
-//	}		
-//	
-//	oldLamp.set(newLamp);
-//	}
-	public void updateLamp(Lamp newLamp) {
-		SQLiteDatabase database = sqliteDb.getReadableDatabase(); //TODO: não deveria abrir banco de dados na main thread
+	private ConsumptionEvent filterLastConsumption(List<ConsumptionEvent> history) {
+		ConsumptionEvent lastEvt = null;
+		for(ConsumptionEvent evt : history){
+			if(lastEvt != null){
+				if(lastEvt.getTimestamp() < evt.getTimestamp()){
+					lastEvt = evt;
+				}
+			}
+			else{
+				lastEvt = evt;
+			}
+		}
 		
-		ContentValues lampValues = lampTable.lampToValues(newLamp);
-
-		String whereClause = LampTable.ID_COLUMN + "=" + String.valueOf(newLamp.getId());
-		
-		
-		long rowsAffected = database.update(lampTable.getName(), lampValues, whereClause, null);
-		Log.d(getClass().getName(), "UpdateLamp. RowsAffected: " + rowsAffected);
-		
-		database.close();
-	}
-
-
-	public void addConsumption(ConsumptionEvent event) {
-		SQLiteDatabase database = sqliteDb.getReadableDatabase(); //TODO: não deveria abrir banco de dados na main thread
-		
-		ContentValues values = consumptionTable.toValues(event);
-		
-		long inserted = database.insert(consumptionTable.getName(), null, values);
-		
-		Log.d(getClass().getName(), "Inserted consumption: " + inserted);
-		
-		database.close();
-	}
-
-	
+		return lastEvt;
+	}	
 }

@@ -29,7 +29,7 @@ public class LampHomeShellClient {
 	private static final String SERVICE_LIGAR = "ligar";
 	private static final String APPLIANCES_ROUTE = "appliances";
 	private static final Object EXTRAS_ROUTE = "extras";
-	private static final Object CONSUMPTION_EXTRA = "consumption";
+	private static final Object CONSUMPTION_EXTRA = "CONSUMPTION";
 	private static final String SERVICE_DEFINIRBRILHO = "definir_brilho";
 	private static final Object SERVICES_ROUTE = "services";
 	
@@ -100,14 +100,23 @@ public class LampHomeShellClient {
 		return response;
 	}
 	public List<ConsumptionEvent> getLampConsumption(long lampId){
+		return getLampConsumption(lampId, null);
+	}
+	public List<ConsumptionEvent> getLampConsumption(long lampId,
+			ConsumptionEvent event) {
 		HttpClient httpclient = new DefaultHttpClient();
-		HttpGet httpget = new HttpGet(getLampConsumptionUrl(lampId));
+		URI uri = getLampConsumptionUrl(lampId, event);
+		HttpGet httpget = new HttpGet(uri);
 		
 		ResponseHandler<List<ConsumptionEvent> > rh = new ConsumptionListResponseHandler();
 
 		List<ConsumptionEvent> response = null;
 		try {
 			response = httpclient.execute(httpget, rh);
+			
+			for(ConsumptionEvent evt : response){
+				evt.setId(lampId);
+			}
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -158,9 +167,12 @@ public class LampHomeShellClient {
 		}
 		return null;
 	}
-	private URI getLampConsumptionUrl(long lampId) {
+	private URI getLampConsumptionUrl(long lampId, ConsumptionEvent event) {
 		try {
-			return new URI(buildUrl(getServerUrl(), APPLIANCES_ROUTE, lampId, EXTRAS_ROUTE, CONSUMPTION_EXTRA));
+			long timestampInSeconds = event.getTimestamp()/1000;
+			String startTime = event != null ? ("?start_date=" + timestampInSeconds)  : "";
+			String url = buildUrl(getServerUrl(), APPLIANCES_ROUTE, lampId, EXTRAS_ROUTE, CONSUMPTION_EXTRA) + startTime;
+			return new URI(url);
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

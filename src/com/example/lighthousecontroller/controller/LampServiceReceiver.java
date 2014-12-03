@@ -8,6 +8,7 @@ import java.util.Map;
 import com.example.lighthousecontroller.R;
 import com.example.lighthousecontroller.data.Data;
 import com.example.lighthousecontroller.model.ApplianceGroup;
+import com.example.lighthousecontroller.model.ConsumptionEvent;
 import com.example.lighthousecontroller.model.Lamp;
 import com.example.lighthousecontroller.view.LampDetailsActivity;
 
@@ -31,9 +32,11 @@ public class LampServiceReceiver extends BroadcastReceiver {
 		IntentFilter receiveLampFilter;
 		IntentFilter receiveChangeBrightFilter;
 		IntentFilter receiveChangePowerFilter;
+		IntentFilter receiveConsumptionFilter;
 
 		private final List<LampCollectionObserver> lampCollectionObservers;
 		private final Map<Long, List<LampObserver> > lampObservers;
+		private final Map<Long, List<ConsumptionObserver>> consumptionObservers;
 		
 		private Context context;
 		
@@ -42,10 +45,12 @@ public class LampServiceReceiver extends BroadcastReceiver {
 			receiveLampFilter         = new IntentFilter(LampService.RECEIVE_LAMP);
 			receiveChangeBrightFilter = new IntentFilter(LampService.RECEIVE_CHANGEBRIGHT);
 			receiveChangePowerFilter  = new IntentFilter(LampService.RECEIVE_CHANGEPOWER);
+			receiveConsumptionFilter  = new IntentFilter(LampService.RECEIVE_CONSUMPTION);
 			
 			this.context = context;
 			lampObservers = new HashMap<>();
-			lampCollectionObservers = new ArrayList<>();	
+			consumptionObservers = new HashMap<>();
+			lampCollectionObservers = new ArrayList<>();
 		}
 		
 		@Override
@@ -64,8 +69,11 @@ public class LampServiceReceiver extends BroadcastReceiver {
 			else if(intent.getAction().equals(LampService.RECEIVE_CHANGEPOWER)){
 				receiveChangePower(context, intent);	
 			}
+			else if(intent.getAction().equals(LampService.RECEIVE_CONSUMPTION)){
+				receiveConsumptionEvent(context, intent);
+//				Toast.makeText(context, "Received consumption broadcast", Toast.LENGTH_SHORT).show();
+			}
 		}
-
 
 		private void assertNotNull(Object obj) {
 			if(obj == null){
@@ -109,6 +117,21 @@ public class LampServiceReceiver extends BroadcastReceiver {
 			
 			notifyLampCollectionChange(lampGroups);
 		}
+		private void receiveConsumptionEvent(Context context, Intent intent) {
+			List<ConsumptionEvent> events = (List<ConsumptionEvent>) intent.getSerializableExtra(LampService.CONSUMPTIONLIST_DATA);
+			
+			if(events.size() == 0){
+				return;
+			}
+			
+			for(ConsumptionEvent evt : events){
+				Data.instance().getLampDAO().addConsumption(evt);
+			}
+			long lampId = intent.getLongExtra(LampService.LAMP_ID_DATA, 0);
+			if(lampId > 0){
+				notifyConsumptionEvent(lampId, events);
+			}
+		}
 
 		public void registerLocalIntentFilters(){
 			LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(context);
@@ -117,6 +140,7 @@ public class LampServiceReceiver extends BroadcastReceiver {
 			broadcastManager.registerReceiver(this, receiveLampFilter);
 			broadcastManager.registerReceiver(this, receiveChangeBrightFilter);
 			broadcastManager.registerReceiver(this, receiveChangePowerFilter);
+			broadcastManager.registerReceiver(this, receiveConsumptionFilter);
 		}
 
 		public void addLampObserver(LampObserver observer, Long lampId) {
@@ -138,7 +162,18 @@ public class LampServiceReceiver extends BroadcastReceiver {
 		public void removeLampCollectionObserver(LampCollectionObserver observer) {
 			this.lampCollectionObservers.remove(observer);
 		}
-		
+		public void addConsumptionObserver(ConsumptionObserver observer, Long lampId) {
+			if(!consumptionObservers.containsKey(lampId)){
+				consumptionObservers.put(lampId, new ArrayList<ConsumptionObserver>());
+			}
+			this.consumptionObservers.get(lampId).add(observer);
+		}
+		public void removeConsumptionObserver(ConsumptionObserver observer,
+				Long lampId) {
+			if(consumptionObservers.containsKey(lampId)){
+				this.consumptionObservers.get(lampId).remove(observer);
+			}
+		}
 
 		private void notifyLampCollectionChange(List<ApplianceGroup> groups) {
 			for(LampCollectionObserver observer : this.lampCollectionObservers){
@@ -161,7 +196,20 @@ public class LampServiceReceiver extends BroadcastReceiver {
 			}
 //			createChangePowerNotification(lamp, lamp.isOn());
 		}
-		
+
+		private void notifyConsumptionEvent(long lampId, List<ConsumptionEvent> events) {
+			
+			List<ConsumptionObserver> observers = new ArrayList<>();
+			if(this.consumptionObservers.containsKey(lampId)){
+				observers.addAll(consumptionObservers.get(lampId));
+			}
+			if(this.consumptionObservers.containsKey(null)){
+				observers.addAll(consumptionObservers.get(null));
+			}
+			for(ConsumptionObserver observer : observers){
+				observer.onConsumption(events);
+			}
+		}
 		/* ********************************Notificações*********************************************/
 		
 		//FIXME: mover notificações para serviço (?)

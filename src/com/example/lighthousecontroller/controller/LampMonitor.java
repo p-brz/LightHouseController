@@ -128,7 +128,7 @@ public class LampMonitor extends LongLivedIntentService
 	}
 	private void updateLamp(Long lampId) {
 		Intent intent = new Intent(this, LampService.class);
-		intent.setAction(LampService.GET_LAMP);
+		intent.setAction(LampService.UPDATE_LAMP);
 		intent.putExtra(LampService.LAMP_ID_DATA, lampId);
 		startService(intent);
 	}

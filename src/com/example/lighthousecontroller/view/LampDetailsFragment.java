@@ -13,6 +13,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Toast;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -150,7 +151,8 @@ public class LampDetailsFragment extends Fragment
 	/* *********************************** ConsumptionObserver ************************************************/
 	
 	@Override
-	public void onConsumption(List<ConsumptionEvent> consumptionEvents) {	
+	public void onConsumption(List<ConsumptionEvent> consumptionEvents) {
+		Toast.makeText(getActivity(), "Received consumptions: " + consumptionEvents, Toast.LENGTH_SHORT).show();
 		for(ConsumptionEvent event : consumptionEvents){
 			if(lamp !=null && event.getSourceId() == this.lamp.getId()){
 				consumptionGraphFragment.plotConsumption(event);

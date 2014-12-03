@@ -47,5 +47,9 @@ public class ConsumptionEvent implements Serializable{
 	public long getSourceId(){
 		return sourceId;
 	}
+
+	public void setId(long lampId) {
+		this.sourceId = lampId;
+	}
 	
 }

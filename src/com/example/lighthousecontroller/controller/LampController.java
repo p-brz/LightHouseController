@@ -1,6 +1,5 @@
 package com.example.lighthousecontroller.controller;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,18 +27,14 @@ public class LampController {
 	}
 
 	private final Map<Long, List<ConsumptionObserver>> consumptionObservers;
-	private LampControllerConsumptionSimulator consumptionSimulator;
-//	private final List<Lamp> lamps;
-//	private final List<ApplianceGroup> groups;
+//	private LampControllerConsumptionSimulator consumptionSimulator;
 
 	LampServiceReceiver receiver;
 	
 	public LampController() {
 		super();
 		consumptionObservers = new HashMap<>();
-		consumptionSimulator = new LampControllerConsumptionSimulator();
-//		lamps = new ArrayList<>();
-//		groups = new ArrayList<>();
+//		consumptionSimulator = new LampControllerConsumptionSimulator();
 		
 		Context context = LightHouseControllerApplication.getApplication();
 		receiver = new LampServiceReceiver(context);
@@ -53,42 +48,33 @@ public class LampController {
 		removeConsumptionObserver(observer, null);
 	}
 	public void addConsumptionObserver(ConsumptionObserver observer, Long lampId) {
-		if(!consumptionObservers.containsKey(lampId)){
-			consumptionObservers.put(lampId, new ArrayList<ConsumptionObserver>());
-		}
-		this.consumptionObservers.get(lampId).add(observer);
-		startSimulator();
+		receiver.addConsumptionObserver(observer, lampId);
+//		startSimulator();
 	}
 	public void removeConsumptionObserver(ConsumptionObserver observer, Long lampId) {
-		if(consumptionObservers.containsKey(lampId)){
-			this.consumptionObservers.get(lampId).remove(observer);
-		}
-		stopSimulator();
+		receiver.removeConsumptionObserver(observer, lampId);
+//		stopSimulator();
 	}
 
 	public void addLampObserver(LampObserver observer) {
 		addLampObserver(observer,null);
 	}
 	public void addLampObserver(LampObserver observer, Long lampId) {
-//		Data.instance().getLampDAO().addLampObserver(observer, lampId);
 		receiver.addLampObserver(observer, lampId);
-		startSimulator();
+//		startSimulator();
 	}
 	public void removeLampObserver(LampObserver observer) {
 		removeLampObserver(observer,null);
 	}
 	public void removeLampObserver(LampObserver observer, Long lampId) {
-//		Data.instance().getLampDAO().removeLampObserver(observer, lampId);
 		receiver.removeLampObserver(observer, lampId);
-		stopSimulator();
+//		stopSimulator();
 	}
 
 	public void addLampCollectionObserver(LampCollectionObserver observer) {
-//		Data.instance().getLampDAO().addLampCollectionObserver(observer);
 		receiver.addLampCollectionObserver(observer);
 	}
 	public void removeLampCollectionObserver(LampCollectionObserver observer) {
-//		Data.instance().getLampDAO().removeLampCollectionObserver(observer);
 		receiver.removeLampCollectionObserver(observer);
 	}
 	
@@ -96,7 +82,6 @@ public class LampController {
 	boolean generatingData = false;
 	public List<ApplianceGroup> getGroups() {
 		List<ApplianceGroup> groups =  Data.instance().getLampDAO().getGroups();
-//		LampHomeShellClient.instance().getGroups();
 		
 		sendGetGroupsRequest();
 		
@@ -107,21 +92,17 @@ public class LampController {
 		return Data.instance().getLampDAO().getLamps();
 	}
 	public Lamp getLampStatus(Lamp lamp) {
-		Lamp storedLamp = Data.instance().getLampDAO().getLamp(lamp.getId());
-//		LampHomeShellClient.instance().updateLampStatus(storedLamp);
-		
+		Lamp storedLamp = Data.instance().getLampDAO().getLamp(lamp.getId());		
 		sendGetLampRequest(lamp.getId());
 		
 		return storedLamp;
 	}
 	
 	public void requestChangePower(Lamp someLamp, boolean on) {
-//		LampHomeShellClient.instance().changeLampPower(someLamp, on);
 		sendChangePowerRequest(someLamp.getId(), on);
 	}
 
 	public void requestChangeBright(Lamp someLamp, float bright) {
-//		LampHomeShellClient.instance().changeLampBright(someLamp, bright);
 		sendChangeBright(someLamp.getId(), bright);
 	}
 	/* ******************************** Private methods************************************************/
@@ -144,15 +125,6 @@ public class LampController {
 	}
 	private void sendChangePowerRequest(long id, boolean on) {
 		Log.d(getClass().getName(), "sendChangePowerRequest");
-//		try {
-//			LampHomeShellClient.instance().changeLampPower(id, on);
-//		} catch (ClientProtocolException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 		
 		Context context = LightHouseControllerApplication.getApplication();
 		Intent requestIntent = new Intent(context, LampService.class);
@@ -191,16 +163,16 @@ public class LampController {
 	}
 
 	
-	private void startSimulator() {
-		if(!consumptionSimulator.isRunning() && 
-				(!consumptionObservers.isEmpty())){
-			Log.d(LOG_TAG, "Request consumption start");
-			consumptionSimulator.startConsumptionReceiver(this);
-		}
-	}
-	private void stopSimulator() {
-		if(consumptionSimulator.isRunning() && consumptionObservers.isEmpty()){
-			consumptionSimulator.stopConsumptionReceiver();
-		}
-	}
+//	private void startSimulator() {
+//		if(!consumptionSimulator.isRunning() && 
+//				(!consumptionObservers.isEmpty())){
+//			Log.d(LOG_TAG, "Request consumption start");
+//			consumptionSimulator.startConsumptionReceiver(this);
+//		}
+//	}
+//	private void stopSimulator() {
+//		if(consumptionSimulator.isRunning() && consumptionObservers.isEmpty()){
+//			consumptionSimulator.stopConsumptionReceiver();
+//		}
+//	}
 }
